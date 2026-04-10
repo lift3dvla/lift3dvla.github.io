@@ -495,6 +495,17 @@ body {
     background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
 }
 
+.tldr-banner {
+    background: #f0f7ff;
+    border-left: 4px solid #2366d1;
+    border-radius: 0 8px 8px 0;
+    padding: 1rem 1.4rem;
+    font-size: 1rem;
+    color: #333;
+    text-align: left;
+    line-height: 1.6;
+}
+
 .section-gray {
     background: #f7f7f7;
 }
