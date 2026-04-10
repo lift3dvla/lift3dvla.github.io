@@ -3,35 +3,19 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="description" content="EMD: Explicit Motion Modeling for High-Quality Street Gaussian Splatting.">
-    <meta name="keywords" content="Gaussian Splatting, Autonomous Driving">
+    <meta name="description" content="Lift3D-VLA: Lifting VLA Models to 3D Geometry and Dynamics-Aware Manipulation">
+    <meta name="keywords" content="VLA, Robotic Manipulation, 3D Representation, Vision-Language-Action">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>EMD: Explicit Motion Modeling for High-Quality Street Gaussian Splatting</title>
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-
-        gtag('js', new Date());
-
-        gtag('config', 'G-PYVRSFMDRL');
-    </script> -->
+    <title>Lift3D-VLA: Lifting VLA Models to 3D Geometry and Dynamics-Aware Manipulation</title>
 
     <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
     <link rel="stylesheet" href="./static/css/bulma.min.css">
     <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
     <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-    <!-- <link rel="stylesheet" href="./static/css/fontawesome.all.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
     <link rel="stylesheet" href="./static/css/index.css">
-    <link rel="icon" href="./static/images/EMD_ICON.png">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script defer src="./static/js/fontawesome.all.min.js"></script>
@@ -39,55 +23,155 @@
     <script src="./static/js/bulma-slider.min.js"></script>
     <script src="./static/js/index.js"></script>
 
+    <style>
+        .stats-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
+            border: 1px solid #cce0f5;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            min-width: 160px;
+        }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2366d1;
+            font-family: 'Google Sans', sans-serif;
+            line-height: 1.1;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 0.3rem;
+        }
+        .contribution-list {
+            text-align: left;
+        }
+        .contribution-list li {
+            margin-bottom: 0.8rem;
+        }
+        .tag-badge {
+            display: inline-block;
+            background: #2366d1;
+            color: white;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        .method-figure {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            margin-bottom: 1rem;
+        }
+        .results-table {
+            font-size: 0.92rem;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        .results-table th {
+            background: #f0f7ff;
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid #d0e4f7;
+            font-weight: 600;
+        }
+        .results-table td {
+            padding: 7px 12px;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+        }
+        .results-table tr:nth-child(even) td {
+            background: #fafcff;
+        }
+        .results-table .ours-row td {
+            background: #e8f4fd;
+            font-weight: 700;
+            color: #2366d1;
+        }
+        .results-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+        .stage-section {
+            background: linear-gradient(135deg, #f8fbff 0%, #edf5ff 100%);
+            border-left: 4px solid #2366d1;
+            border-radius: 0 10px 10px 0;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .stage-title {
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 700;
+            color: #2366d1;
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+        .publication-affiliations {
+            margin-top: 0.5rem;
+            color: #555;
+        }
+        .publication-footnotes {
+            color: #777;
+        }
+        .equal-contribution {
+            color: #888;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 
 <body>
 
+    <!-- Hero / Title Section -->
     <section class="hero">
         <div class="hero-body">
             <div class="container is-max-desktop">
                 <div class="columns is-centered">
                     <div class="column has-text-centered">
                         <h1 class="title is-1 publication-title">
-                            <span class="gradient-text">EMD:</span> Explicit Motion Modeling for High-Quality Street Gaussian Splatting
+                            <span class="gradient-text">Lift3D-VLA:</span> Lifting VLA Models to 3D Geometry and Dynamics-Aware Manipulation
                         </h1>
 
                         <div class="is-size-5 publication-authors">
-                            <span class="author-block"><a href="https://ucwxb.github.io/">Xiaobao Wei</a><sup>*,†</sup>,</span>
-                            <span class="author-block"><a href="https://github.com/qingpowuwu">Qingpo Wuwu</a><sup>*,†</sup>,</span>
-                            <span class="author-block">Zhongyu Zhao<sup>†</sup>,</span>
-                            <span class="author-block">Zhuangzhe Wu,</span>
-                            <span class="author-block"><a href="https://github.com/nnanhuang">Nan Huang</a>,</span>
-                            <span class="author-block"><a href="https://lu-m13.github.io/">Ming Lu</a>,</span>
-                            <span class="author-block"><a href="https://scholar.google.ca/citations?user=vOAzYlcAAAAJ&hl=en">Ningning Ma</a>,</span>
-                            <span class="author-block"><a href="https://www.shanghangzhang.com/">Shanghang Zhang</a><sup>‡</sup></span>
+                            <span class="author-block">Anonymous Authors</span>
                         </div>
 
-                        <div class="is-size-5 publication-affiliations">
-                            <p>Peking University, Autonomous Driving Division, NIO</p>
+                        <div class="is-size-6 publication-affiliations">
+                            <p>Under Review</p>
                         </div>
 
-                        <div class="publication-footnotes is-size-6" style="margin-bottom: 12px;">
-                            <p><sup>*</sup>Equal contribution</p>
-                            <p><sup>†</sup>Work done during internship NIO</p>
-                            <p><sup>‡</sup>Corresponding Author</p>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 2.5rem; margin-top: 1.2rem; flex-wrap: wrap;">
+                            <img src="./static/images/logos/pku_1.png" alt="Peking University" style="height: 50px; object-fit: contain;">
+                            <img src="./static/images/logos/zhipingfang_black_letter.png" alt="Zhiping Fang" style="height: 50px; object-fit: contain;">
+                            <img src="./static/images/logos/CUHK.png" alt="CUHK" style="height: 50px; object-fit: contain;">
                         </div>
 
-                        <div class="publication-links">
+                        <div class="publication-links" style="margin-top: 1.2rem;">
                             <span class="link-block">
-                                <a href="https://arxiv.org/pdf/2411.15582" class="external-link button is-normal is-rounded is-dark">
+                                <a href="./static/papers/placeholder.md" class="external-link button is-normal is-rounded is-dark">
                                     <span class="icon">
                                         <i class="ai ai-arxiv"></i>
                                     </span>
                                     <span>Paper</span>
                                 </a>
                             </span>
-                            
                             <span class="link-block">
-                                <a href="https://github.com/qingpowuwu/emdgaussian.github.io" class="external-link button is-normal is-rounded is-dark">
+                                <a href="#" class="external-link button is-normal is-rounded is-dark">
                                     <span class="icon"><i class="fab fa-github"></i></span>
-                            <span>Code</span>
-                            </a>
+                                    <span>Code (Coming Soon)</span>
+                                </a>
                             </span>
                         </div>
                     </div>
@@ -96,551 +180,33 @@
         </div>
     </section>
 
-    <!-- Zoom Comparison Section -->
-    <section class="section zoom-section">
-        <div class="container is-fullhd">
+    <!-- Teaser / Key Results Section -->
+    <section class="section" style="background: linear-gradient(135deg, #e8f4fd 0%, #ffffff 100%); padding: 2.5rem 1.5rem;">
+        <div class="container is-max-desktop">
             <div class="columns is-centered has-text-centered">
-                <div class="column is-12">
-                    <div class="title-container">
-                        <h2 class="title is-3">Enhanced Scene Reconstruction with Motion Modeling</h2>
-                        <p class="subtitle is-5">Our EMD effectively handles varying motion speeds in street scenes, leading to improved reconstruction quality</p>
-                    </div>
+                <div class="column is-10">
+                    <h2 class="title is-3">State-of-the-Art Robotic Manipulation</h2>
+                    <p class="subtitle is-5" style="margin-bottom: 2rem;">
+                        Lift3D-VLA achieves significant improvements over prior VLA methods by equipping 2D VLA models with <strong>explicit 3D point cloud reasoning</strong> and <strong>temporally coherent action generation</strong>.
+                    </p>
 
-                    <!-- method selection -->
-                    <div class="method-selection mb-4">
-                        <div class="method-tabs">
-                            <span class="method-tab active" data-method="s3gaussian">S3Gaussian Results</span>
-                            <span class="method-tab" data-method="streetgaussian">StreetGaussian Results</span>
+
+
+                    <!-- Teaser figure -->
+                    <div class="pipeline-image" style="margin-top: 2rem;">
+                        <img src="./static/images/lift3dvla/1_teaser.png" alt="Lift3D-VLA Overview" class="method-figure"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding: 2rem; background: #f5f5f5; border-radius: 8px; color: #777;">
+                            [Teaser figure: static/images/lift3dvla/1_teaser.png]
                         </div>
                     </div>
-
-                    <!-- Scene Navigation -->
-                    <div class="scene-navigation">
-                        <button class="nav-arrow prev">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-
-                        <div class="scene-container">
-                            <div class="scenes-wrapper">
-                                <!-- Scene 1: RGB Comparison -->
-                                <div class="scene active">
-                                    <div class="columns is-centered">
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6">Ground Truth</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6 method-name">S3Gaussian</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6 method-name">S3Gaussian + Ours</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Scene 2: Error Visualization -->
-                                <div class="scene">
-                                    <div class="columns is-centered">
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6">Ground Truth</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6 method-name">S3Gaussian Error</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                        <div class="column is-4">
-                                            <h4 class="subtitle is-6 method-name">S3Gaussian + Ours Error</h4>
-                                            <div class="zoom-container">
-                                                <img class="zoom-image" />
-                                                <div class="image-dimensions"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Navigation Dots -->
-                            <div class="nav-dots">
-                                <button class="nav-dot active" data-index="0"></button>
-                                <button class="nav-dot" data-index="1"></button>
-                            </div>
-                        </div>
-
-                        <button class="nav-arrow next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    </div>
+                    <p class="pipeline-caption">
+                        <b>Overview.</b> Unlike previous 3D VLA methods that encode point clouds with newly introduced 3D encoders or by projecting features between 2D and 3D spaces, Lift3D-VLA equips 2D VLA models with explicit 3D reasoning and temporally coherent action generation. Across 22 simulated and 10 real-world tasks, Lift3D-VLA achieves state-of-the-art results.
+                    </p>
                 </div>
             </div>
         </div>
     </section>
-
-    <style>
-        .zoom-section {
-            background: linear-gradient(135deg, #e6f3ff 0%, #ffffff 100%);
-            padding: 3rem 1.5rem;
-        }
-        
-        .title-container {
-            margin-bottom: 2rem;
-        }
-        
-        .scene-navigation {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            position: relative;
-        }
-        
-        .nav-arrow {
-            background: rgba(0, 0, 0, 0.6);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-        
-        .nav-arrow:hover {
-            background: rgba(0, 0, 0, 0.8);
-            transform: scale(1.1);
-        }
-        
-        .nav-arrow i {
-            font-size: 1.2rem;
-        }
-        
-        .scene-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-        
-        .scenes-wrapper {
-            display: flex;
-            transition: transform 0.5s ease-in-out;
-            width: 200%;
-        }
-        
-        .scene {
-            width: 50%;
-            opacity: 1;
-            flex-shrink: 0;
-        }
-        
-        .nav-dots {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-            gap: 1rem;
-            position: relative;
-            /* Add this */
-            z-index: 20;
-            /* Add this */
-        }
-        
-        .nav-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid #4a4a4a;
-            background: transparent;
-            cursor: pointer;
-            padding: 0;
-            transition: all 0.3s ease;
-            position: relative;
-            /* Add this */
-            z-index: 21;
-            /* Add this */
-        }
-        
-        .nav-dot.active {
-            background: #4a4a4a;
-            transform: scale(1.0);
-        }
-        
-        .zoom-container {
-            position: relative;
-            width: 100%;
-            padding-top: 75%;
-            overflow: hidden;
-            border-radius: 8px;
-            background-color: #f5f5f5;
-        }
-        
-        .zoom-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease-out;
-        }
-        
-        .image-dimensions {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            z-index: 2;
-        }
-        
-        .zoomed {
-            animation: zoomSequence 20s ease-in-out forwards;
-        }
-        
-        @keyframes zoomSequence {
-            0% {
-                transform: scale(1);
-            }
-            8% {
-                transform: scale(1);
-            }
-            60% {
-                transform: scale(var(--zoom-scale, 8));
-            }
-            75% {
-                transform: scale(var(--zoom-scale, 8));
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        
-        .method-selection {
-            margin: 2rem 0;
-        }
-        
-        .method-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            padding-bottom: 0.5rem;
-        }
-        
-        .method-tab {
-            color: #666;
-            padding: 0.5rem 0;
-            cursor: pointer;
-            position: relative;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-        
-        .method-tab::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background-color: #3273dc;
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-        }
-        
-        .method-tab:hover {
-            color: #3273dc;
-        }
-        
-        .method-tab.active {
-            color: #3273dc;
-        }
-        
-        .method-tab.active::after {
-            transform: scaleX(1);
-        }
-        /* 适配移动设备 */
-        
-        @media screen and (max-width: 768px) {
-            .method-tabs {
-                gap: 1rem;
-            }
-            .method-tab {
-                font-size: 0.9rem;
-            }
-        }
-    </style>
-
-    <script>
-        const sceneConfigs = {
-            's3gaussian': {
-                '016-0024': {
-                    part: 'part2',
-                    transformOrigin: '59% 82%', // Changed from fixed pixels to percentages
-                    zoomScale: 3
-                },
-                '031-0049': {
-                    part: 'part1',
-                    transformOrigin: '70% 99%',
-                    zoomScale: 1.5
-                },
-                '053-0020': {
-                    part: 'part1',
-                    transformOrigin: '90% 99%',
-                    zoomScale: 2.2
-                },
-                '080-0038': {
-                    part: 'part2',
-                    transformOrigin: '0% 95%',
-                    zoomScale: 2
-                },
-                '089-0038': {
-                    part: 'part3',
-                    transformOrigin: '30% 65%',
-                    zoomScale: 3
-                },
-                '546-0037': {
-                    part: 'part1',
-                    transformOrigin: '0% 95%',
-                    zoomScale: 2
-                }
-            },
-            'streetgaussian': {
-                '090-0004': {
-                    transformOrigin: '99% 85%',
-                    zoomScale: 3
-                },
-                '105-0177': {
-                    transformOrigin: '14% 70%',
-                    zoomScale: 5.5
-                },
-                '150-0012': {
-                    transformOrigin: '2.5% 98%',
-                    zoomScale: 5
-                },
-                '181-0050': {
-                    transformOrigin: '3% 61.3%',
-                    zoomScale: 5.8
-                }
-            }
-        };
-
-        let currentMethod = 's3gaussian';
-        let currentSceneIndex = 0;
-
-        function showScene(index) {
-            const scenesWrapper = document.querySelector('.scenes-wrapper');
-            const dots = document.querySelectorAll('.nav-dot');
-
-            scenesWrapper.style.transform = `translateX(-${index * 50}%)`;
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[index].classList.add('active');
-
-            const allImages = document.querySelectorAll('.zoom-image');
-            allImages.forEach(img => {
-                img.classList.remove('zoomed');
-                img.style.transform = 'scale(1)'; // Add this line to reset the scale
-            });
-
-            setTimeout(() => {
-                const currentImages = document.querySelectorAll(`.scene:nth-child(${index + 1}) .zoom-image`);
-                currentImages.forEach(img => img.classList.add('zoomed'));
-            }, 50);
-        }
-
-        function updateScene(direction) {
-            const scenes = Object.keys(sceneConfigs[currentMethod]);
-
-            // Remove zoomed class from all images before updating
-            const allImages = document.querySelectorAll('.zoom-image');
-            allImages.forEach(img => {
-                img.classList.remove('zoomed');
-                img.style.transform = 'scale(1)';
-            });
-
-            currentSceneIndex = (currentSceneIndex + direction + scenes.length) % scenes.length;
-            const sceneId = scenes[currentSceneIndex];
-
-            // Wait a brief moment before updating images and showing the new scene
-            setTimeout(() => {
-                updateImages(currentMethod, sceneId);
-                showScene(0);
-            }, 50);
-        }
-
-        function initializeNavigation() {
-            const prevButton = document.querySelector('.nav-arrow.prev');
-            const nextButton = document.querySelector('.nav-arrow.next');
-
-            prevButton.addEventListener('click', () => updateScene(-1));
-            nextButton.addEventListener('click', () => updateScene(1));
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowLeft') updateScene(-1);
-                if (e.key === 'ArrowRight') updateScene(1);
-            });
-        }
-
-        // Add this function to calculate and update transform origin dynamically
-        function updateTransformOrigin(img) {
-            const container = img.closest('.zoom-container');
-            const rect = container.getBoundingClientRect();
-            const config = sceneConfigs[currentMethod][Object.keys(sceneConfigs[currentMethod])[currentSceneIndex]];
-
-            // Get percentage values
-            const [xPercent, yPercent] = config.transformOrigin.split(' ');
-
-            // Calculate actual pixels based on current container size
-            const xPixel = (parseFloat(xPercent) / 100) * rect.width;
-            const yPixel = (parseFloat(yPercent) / 100) * rect.height;
-
-            img.style.transformOrigin = `${xPixel}px ${yPixel}px`;
-        }
-
-        function updateImages(method, sceneId) {
-            const config = sceneConfigs[method][sceneId];
-            const basePath = `./static/images/1_Teasers/${method === 's3gaussian' ? '1_s3gaussian' : '2_streetgaussian'}/${sceneId}`;
-
-            const images = document.querySelectorAll('.zoom-image');
-            images.forEach(img => {
-                img.style.transform = 'scale(1)';
-                img.style.transformOrigin = config.transformOrigin;
-                img.style.setProperty('--zoom-scale', config.zoomScale);
-                img.style.setProperty('--animation-duration', '26s');
-
-                // Update transform origin when image loads
-                img.onload = function() {
-                    updateTransformOrigin(img);
-                    const dimensions = img.closest('.zoom-container').querySelector('.image-dimensions');
-                    const boundingBox = img.getBoundingClientRect();
-                    dimensions.textContent = `${Math.round(boundingBox.width)}×${Math.round(boundingBox.height)} px`;
-                };
-            });
-
-            if (method === 's3gaussian') {
-                const frameNum = sceneId.split('-')[1];
-                document.querySelectorAll('.scene:first-child .zoom-image')[0].src = `${basePath}/gts/frame_${frameNum}_${config.part}.png`;
-                document.querySelectorAll('.scene:first-child .zoom-image')[1].src = `${basePath}/s3gaussian/frame_${frameNum}_${config.part}.png`;
-                document.querySelectorAll('.scene:first-child .zoom-image')[2].src = `${basePath}/ours/frame_${frameNum}_${config.part}.png`;
-
-                document.querySelectorAll('.scene:last-child .zoom-image')[0].src = `${basePath}/gts/frame_${frameNum}_${config.part}.png`;
-                document.querySelectorAll('.scene:last-child .zoom-image')[1].src = `${basePath}/s3gaussian/error_${config.part}.png`;
-                document.querySelectorAll('.scene:last-child .zoom-image')[2].src = `${basePath}/ours/error_${config.part}.png`;
-            } else {
-                document.querySelectorAll('.scene:first-child .zoom-image')[0].src = `${basePath}/gts/frame.png`;
-                document.querySelectorAll('.scene:first-child .zoom-image')[1].src = `${basePath}/streetgaussian/rgb.png`;
-                document.querySelectorAll('.scene:first-child .zoom-image')[2].src = `${basePath}/ours/rgb.png`;
-
-                document.querySelectorAll('.scene:last-child .zoom-image')[0].src = `${basePath}/gts/frame.png`;
-                document.querySelectorAll('.scene:last-child .zoom-image')[1].src = `${basePath}/streetgaussian/diff.png`;
-                document.querySelectorAll('.scene:last-child .zoom-image')[2].src = `${basePath}/ours/diff.png`;
-            }
-
-            const methodText = method === 's3gaussian' ? 'S3Gaussian' : 'StreetGaussian';
-            document.querySelectorAll('.method-name').forEach(el => {
-                el.textContent = el.textContent.replace(/S3Gaussian|StreetGaussian/, methodText);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dots = document.querySelectorAll('.nav-dot');
-
-            dots.forEach(dot => {
-                dot.addEventListener('click', () => {
-                    const index = parseInt(dot.dataset.index);
-                    showScene(index);
-                });
-            });
-
-            document.querySelectorAll('.method-selection .method-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const method = tab.dataset.method;
-                    currentMethod = method;
-                    currentSceneIndex = 0;
-
-                    document.querySelectorAll('.method-selection .method-tab').forEach(t => {
-                        t.classList.remove('active');
-                    });
-                    tab.classList.add('active');
-
-                    const sceneId = Object.keys(sceneConfigs[method])[0];
-                    updateImages(method, sceneId);
-                    showScene(0);
-                });
-            });
-
-            initializeNavigation();
-            document.querySelector('.method-selection .method-tab[data-method="s3gaussian"]').click();
-
-            // Add debugging code with percentage calculations
-            document.querySelectorAll('.zoom-image').forEach(img => {
-                img.addEventListener('click', (e) => {
-                    const rect = e.target.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    // Calculate percentages
-                    const xPercent = (x / rect.width) * 100;
-                    const yPercent = (y / rect.height) * 100;
-
-                    console.log(`Click coordinates:`);
-                    console.log(`Pixels: ${Math.round(x)}px ${Math.round(y)}px`);
-                    console.log(`Percentages: ${Math.round(xPercent)}% ${Math.round(yPercent)}%`);
-                    console.log(`For sceneConfigs: transformOrigin: '${Math.round(xPercent)}% ${Math.round(yPercent)}%'`);
-                });
-            });
-
-
-            // Add window resize handler here
-            window.addEventListener('resize', () => {
-                const images = document.querySelectorAll('.zoom-image');
-                images.forEach(img => {
-                    updateTransformOrigin(img);
-                });
-            });
-        });
-    </script>
-
-    <!-- Method Section -->
-    <section class="section">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered has-text-centered">
-                <div class="column is-10">
-                    <!-- <h1 class="title is-2">A plug-and-play module that addresses varying motion speeds in street scenes!</h1> -->
-                    <h2 class="title is-3">EMD: A Plug-and-Play Motion Modeling Framework</h2>
-                    <div class="pipeline-image">
-                        <img src="./static/images/2-pipeline.png" alt="EMD" />
-                    </div>
-                    <!-- Method Section Description -->
-                    <h2 class="subtitle has-text-centered pipeline-caption">
-                        Our <b>EMD</b> framework introduces two key components: <b>Motion-aware Feature Encoding</b> for capturing dynamic characteristics and <b>Dual-scale Deformation Framework</b> for handling varying motion speeds. This architecture
-                        enables effective modeling of both fast global motions and slow local deformations in complex street scenes.
-                    </h2>
-                </div>
-    </section>
-
 
     <!-- Abstract Section -->
     <section id="abstract-section" class="section">
@@ -650,16 +216,7 @@
                     <h2 class="title is-3">Abstract</h2>
                     <div class="content has-text-justified">
                         <p>
-                            Photorealistic reconstruction of street scenes is essential for developing real-world simulators in autonomous driving. While recent methods based on 3D/4D Gaussian Splatting (GS) have demonstrated promising results, they still encounter challenges in
-                            complex street scenes due to the unpredictable motion of dynamic objects. Current methods typically decompose street scenes into <strong>
-                                static</strong> and <strong>
-                                    dynamic objects</strong> , learning the Gaussians in either a supervised manner (e.g., w/ 3D bounding-box) or a self-supervised manner (e.g., w/o 3D bounding-box). However, these approaches do not effectively model
-                            the motions of dynamic objects (e.g., the motion speed of pedestrians is clearly different from that of vehicles), resulting in suboptimal scene decomposition.
-                        </p>
-                        <p>
-                            To address this, we propose <strong>Explicit Motion Decomposition (EMD)</strong>, which models the motions of dynamic objects by introducing learnable motion embeddings to the Gaussians, enhancing the decomposition in street
-                            scenes. The proposed EMD is a plug-and-play approach applicable to various baseline methods. We also propose tailored training strategies to apply EMD to both supervised and self-supervised baselines. Through comprehensive
-                            experimentation, we illustrate the effectiveness of our approach with various established baselines.
+                            Recently, Vision–Language–Action (VLA) models have demonstrated strong generalization across diverse tasks. However, effective robotic manipulation in physical environments fundamentally requires geometric understanding and spatial reasoning. While some VLA approaches attempt to incorporate 3D information, they are constrained by <strong>limited data availability</strong> and <strong>geometric information loss</strong> in current 3D encoding pipelines, and fail to jointly capture 3D geometry and temporally structured actions in dynamic environments. To address these limitations, we introduce <strong>Lift3D-VLA</strong>, a unified VLA framework that equips models with explicit 3D point cloud reasoning and enables temporally coherent action generation. First, building upon our previous work Lift3D, an enhanced 2D model-lifting strategy is proposed to geometrically align 3D points with pretrained 2D positional embeddings, enabling direct point-cloud encoding within the VLA vision encoder while minimizing spatial information loss. Based on explicit 3D inputs, we propose <strong>Geometry-Centric Masked Autoencoding (GC-MAE)</strong>, a dual-objective self-supervised framework that reconstructs the current point cloud while predicting its future geometric evolution, allowing the 2D vision encoder to internalize both 3D structure and physical dynamics. We further design <strong>layer-wise temporal action modeling</strong>, which leverages multiple layers of the LLM to collaboratively predict action chunks, enabling temporally consistent predictions.
                         </p>
                     </div>
                 </div>
@@ -667,45 +224,163 @@
         </div>
     </section>
 
-    <!-- Side by Side Video Section -->
-    <section id="rgb-comparison-section" class="section video-section">
+    <!-- Method Section -->
+    <section class="section video-section">
         <div class="container is-max-desktop">
             <div class="columns is-centered has-text-centered">
                 <div class="column is-11">
-                    <h2 class="title is-3">Improved Scene Reconstruction</h2>
+                    <h2 class="title is-3">Method: Lift3D-VLA Framework</h2>
 
-                    <!-- Video Selection Buttons -->
-                    <div id="sidebyside-buttons" class="mb-5">
-                        <!-- Increased margin bottom -->
-                        <button id="sidebyside-scene089" class="button">Scene 089</button>
-                        <button id="sidebyside-scene546" class="button">Scene 546</button>
-                        <button id="sidebyside-scene053" class="button is-primary">Scene 053</button>
-                        <button id="sidebyside-scene080" class="button">Scene 080</button>
-                        <button id="sidebyside-scene640" class="button">Scene 640</button>
-                        <button id="sidebyside-scene323" class="button">Scene 323</button>
-                    </div>
-
-                    <!-- Video Comparison Container -->
-                    <div id="video-stack-container" class="video-stack-container mb-5">
-                        <!-- Added margin bottom -->
-                        <div class="video-stack-wrapper">
-                            <div class="video-title">S3Gaussian</div>
-                            <video id="sidebyside-s3gsVideo" width="100%" height="auto" loop playsinline autoplay muted>
-                                <source src="./static/videos/self_supervised/S3Gaussian/rgb/080.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                            <div class="video-stack-wrapper">
-                                <div class="video-title">S3Gaussian + Ours</div>
-                                <video id="sidebyside-oursVideo" width="100%" height="auto" loop playsinline autoplay muted>
-                                <source src="./static/videos/self_supervised/ours/rgb/080.mp4" type="video/mp4">
-                        </video>
+                    <div class="pipeline-image">
+                        <img src="./static/images/lift3dvla/2_method.png" alt="Lift3D-VLA Framework" class="method-figure"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none; padding: 2rem; background: #f5f5f5; border-radius: 8px; color: #777;">
+                            [Method figure: static/images/lift3dvla/2_method.png]
                         </div>
                     </div>
+                    <p class="pipeline-caption" style="margin-bottom: 2rem;">
+                        <b>Lift3D-VLA Framework.</b> (a) Following Lift3D, we perform virtual projection to align 3D points with pretrained 2D positional embeddings, constructing geometry-aligned 3D PEs. (b) Stage 1: GC-MAE reconstructs the current point cloud while predicting its future geometric evolution, enabling the model to capture physical dynamics. (c) Stage 2: Layer-wise temporal action modeling leverages intermediate and deep LLM layers to generate temporally consistent action sequences.
+                    </p>
 
-                    <!-- Results Description -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Simulation Results Section -->
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-12">
+                    <h2 class="title is-3">Simulation Results</h2>
+                    <p class="subtitle is-5" style="margin-bottom: 2rem;">
+                        Lift3D-VLA is evaluated on 22 tasks across MetaWorld and RLBench benchmarks in multi-task settings.
+                    </p>
+
+                    <!-- MetaWorld Results -->
+                    <h3 class="title is-4" style="text-align: left; margin-bottom: 1rem;">MetaWorld (13 Tasks, Multi-Task)</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Assembly</th>
+                                    <th>Bin Pick</th>
+                                    <th>Box Close</th>
+                                    <th>Button</th>
+                                    <th>Dial</th>
+                                    <th>Drawer</th>
+                                    <th>Hammer</th>
+                                    <th>Hand Ins.</th>
+                                    <th>Peg</th>
+                                    <th>Push</th>
+                                    <th>Reach</th>
+                                    <th>Shelf</th>
+                                    <th>Sweep</th>
+                                    <th><b>Mean S.R.</b></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>OpenVLA</td>
+                                    <td>90</td><td>70</td><td>70</td><td>100</td><td>90</td><td>100</td><td>50</td><td>70</td><td>80</td><td>50</td><td>30</td><td>70</td><td>90</td><td>73.9</td>
+                                </tr>
+                                <tr>
+                                    <td>π0.5</td>
+                                    <td>100</td><td>85</td><td>50</td><td>100</td><td>45</td><td>80</td><td>75</td><td>45</td><td>65</td><td>55</td><td>45</td><td>75</td><td>60</td><td>67.7</td>
+                                </tr>
+                                <tr>
+                                    <td>SpatialVLA</td>
+                                    <td>75</td><td>65</td><td>50</td><td>90</td><td>65</td><td>65</td><td>85</td><td>45</td><td>55</td><td>35</td><td>65</td><td>40</td><td>70</td><td>61.9</td>
+                                </tr>
+                                <tr>
+                                    <td>3DS-VLA</td>
+                                    <td>75</td><td>100</td><td>45</td><td>90</td><td>95</td><td>100</td><td>90</td><td>70</td><td>75</td><td>50</td><td>60</td><td>60</td><td>90</td><td>76.9</td>
+                                </tr>
+                                <tr class="ours-row">
+                                    <td><b>Lift3D-VLA (Ours)</b></td>
+                                    <td>100</td><td>100</td><td>64</td><td>100</td><td>100</td><td>100</td><td>96</td><td>88</td><td>100</td><td>84</td><td>72</td><td>52</td><td>84</td><td><b>87.7</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- RLBench Results -->
+                    <h3 class="title is-4" style="text-align: left; margin-top: 2.5rem; margin-bottom: 1rem;">RLBench (9 Tasks, Multi-Task)</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Close Box</th>
+                                    <th>Close Laptop</th>
+                                    <th>Toilet Seat</th>
+                                    <th>Sweep</th>
+                                    <th>Close Fridge</th>
+                                    <th>Umbrella</th>
+                                    <th>Frame</th>
+                                    <th>Wine Rack</th>
+                                    <th>Water Plants</th>
+                                    <th><b>Mean S.R.</b></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>OpenVLA</td>
+                                    <td>60</td><td>35</td><td>75</td><td>55</td><td>85</td><td>30</td><td>15</td><td>20</td><td>5</td><td>42.2</td>
+                                </tr>
+                                <tr>
+                                    <td>π0.5</td>
+                                    <td>90</td><td>95</td><td>85</td><td>75</td><td>100</td><td>10</td><td>80</td><td>75</td><td>35</td><td>71.7</td>
+                                </tr>
+                                <tr>
+                                    <td>SpatialVLA</td>
+                                    <td>80</td><td>70</td><td>85</td><td>20</td><td>80</td><td>25</td><td>40</td><td>15</td><td>30</td><td>49.4</td>
+                                </tr>
+                                <tr>
+                                    <td>3DS-VLA</td>
+                                    <td>88</td><td>96</td><td>96</td><td>16</td><td>92</td><td>80</td><td>52</td><td>88</td><td>36</td><td>71.6</td>
+                                </tr>
+                                <tr class="ours-row">
+                                    <td><b>Lift3D-VLA (Ours)</b></td>
+                                    <td>95</td><td>80</td><td>95</td><td>95</td><td>90</td><td>65</td><td>75</td><td>95</td><td>50</td><td><b>82.2</b></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="section-subtitle" style="margin-top: 1rem;">
+                        Lift3D-VLA outperforms the best prior VLA by <span class="highlight">+10.8%</span> on MetaWorld and <span class="highlight">+10.5%</span> on RLBench, and attains the highest success on 6 of 9 RLBench tasks.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-World Experiments Section -->
+    <section class="section video-section">
+        <div class="container is-max-desktop">
+            <div class="columns is-centered has-text-centered">
+                <div class="column is-11">
+                    <h2 class="title is-3">Real-World Manipulation</h2>
+                    <p class="subtitle is-5" style="margin-bottom: 2rem;">
+                        Lift3D-VLA is evaluated on 8 real-world manipulation tasks including both single-arm and dual-arm configurations, outperforming the strongest real-world baseline by <span class="highlight">4 percentage points</span>.
+                    </p>
+
+                    <!-- Experimental setup figures -->
+                    <figure class="image" style="margin-bottom: 1.5rem;">
+                        <img src="./static/images/lift3dvla/9_exp_setup_single_arm.png" alt="Single-arm Real-world Setup"
+                             style="width: 100%; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <figcaption class="has-text-centered mt-2" style="font-size: 0.9rem; color: #666;">Single-arm Manipulation Setup</figcaption>
+                    </figure>
+                    <figure class="image" style="margin-bottom: 1.5rem;">
+                        <img src="./static/images/lift3dvla/9_exp_setup_yizhuang_2.png" alt="Dual-arm Real-world Setup"
+                             style="width: 40%; display: block; margin: 0 auto; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                        <figcaption class="has-text-centered mt-2" style="font-size: 0.9rem; color: #666;">Dual-arm Manipulation Setup</figcaption>
+                    </figure>
+
                     <div class="results-description">
                         <p class="section-subtitle">
-                            Comprehensive evaluation showing <span class="highlight">+1.81 PSNR</span> improvement in full scenes and <span class="highlight">+2.81 PSNR</span> in vehicle regions
+                            Long-horizon tasks such as <em>repeatedly scooping eggs from a pan while continuously adapting to dynamic environmental changes</em> demonstrate Lift3D-VLA's robustness to out-of-distribution perturbations in real-world deployment.
                         </p>
                     </div>
                 </div>
@@ -713,132 +388,27 @@
         </div>
     </section>
 
-
-    <!-- Slider Video Section -->
-    <section id="diff-rgb-comparison-section" class="section video-section">
+    <!-- Real-World Robot Experiments Section -->
+    <section class="section video-section" style="background: linear-gradient(135deg, #f8fbff 0%, #edf5ff 100%);">
         <div class="container is-max-desktop">
             <div class="columns is-centered has-text-centered">
                 <div class="column is-11">
-                    <h2 class="title is-3">Error Analysis & Visualization</h2>
-                    <!-- Video Selection Buttons -->
-                    <div class="mb-4">
-                        <button id="slider-scene089" class="button">Scene 089</button>
-                        <button id="slider-scene546" class="button">Scene 546</button>
-                        <button id="slider-scene053" class="button is-primary">Scene 053</button>
-                        <button id="slider-scene080" class="button">Scene 080</button>
-                        <button id="slider-scene640" class="button">Scene 640</button>
-                        <button id="slider-scene323" class="button">Scene 323</button>
-                    </div>
-
-                    <!-- Video Comparison Container -->
-                    <div class="video-compare-container">
-                        <div class="video-compare-wrapper">
-                            <div class="video-layer">
-                                <video id="slider-s3gsVideo" loop playsinline autoplay muted>
-                                <source src="./static/videos/self_supervised/S3Gaussian/diff_rgb/053.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                            <div class="video-layer">
-                                <video id="slider-oursVideo" loop playsinline autoplay muted>
-                                <source src="./static/videos/self_supervised/ours/diff_rgb/053.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                            <div class="compare-slider">
-                                <div class="slider-handle">
-                                    <div class="slider-line"></div>
-                                </div>
-                            </div>
-                            <div class="video-compare-titles">
-                                <span>S3Gaussian</span>
-                                <span>S3Gaussian + Ours</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Street Scene Reconstruction Section -->
-    <section id="streetgaussian-section" class="section video-section">
-        <!-- Change from is-max-desktop to is-fullhd for wider container -->
-        <div class="container is-max-desktop">
-            <div class="columns is-centered has-text-centered">
-                <!-- Change from is-12 to is-full for full width -->
-                <div class="column is-12">
-                    <h2 class="title is-3">High-Quality Street Scene Reconstruction</h2>
-                    <!-- Add max-width to the container -->
-                    <div class="streetgaussian-compare-container wider-container">
-                        <div class="columns is-centered">
-                            <!-- Adjust column sizes for wider layout -->
-                            <div class="column is-one-third">
-                                <h3 class="subtitle is-5 video-subtitle">Ground Truth</h3>
-                                <video id="gt-rgb-video" class="comparison-video" autoplay loop muted playsinline>
-                                <source src="./static/videos/supervised/ours/gt_rgb/waymo_emb_026.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                            <div class="column is-one-third">
-                                <h3 class="subtitle is-5 video-subtitle">StreetGaussian + Ours</h3>
-                                <video id="our-rgb-video" class="comparison-video" autoplay loop muted playsinline>
-                                <source src="./static/videos/supervised/ours/rgb/waymo_emb_026.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                            <div class="column is-one-third">
-                                <h3 class="subtitle is-5 video-subtitle">Reconstruction Error</h3>
-                                <video id="diff-video" class="comparison-video" autoplay loop muted playsinline>
-                                <source src="./static/videos/supervised/ours/diff_rgb/waymo_emb_026.mp4" type="video/mp4">
-                            </video>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Scene Selection Buttons -->
-                    <div class="scene-buttons scene-buttons-spacing">
-                        <div class="buttons has-addons is-centered">
-                            <button class="button is-info is-selected" data-scene="026">
-                            <span class="icon"><i class="fas fa-car"></i></span>
-                            <span>Scene 026</span>
-                        </button>
-                            <button class="button" data-scene="108">
-                            <span class="icon"><i class="fas fa-traffic-light"></i></span>
-                            <span>Scene 108</span>
-                        </button>
-                            <button class="button" data-scene="150">
-                            <span class="icon"><i class="fas fa-road"></i></span>
-                            <span>Scene 150</span>
-                        </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Results Description -->
-            <div class="results-description">
-                <p class="section-subtitle">
-                    Results highlight improved metrics with
-                    <span class="highlight">PSNR increased by 1.42</span> and
-                    <span class="highlight">SSIM improved by 1.1%</span> for complete scene synthesis
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Ablation Section -->
-    <section class="section" id="ablation">
-        <div class="container is-max-desktop">
-            <div class="columns is-centered">
-                <div class="column is-11 content has-text-centered">
-                    <h2 class="title is-3">Ablation Study</h2>
-                    <p class="section-subtitle">
-                        Examining the contribution of each component in our EMD framework
+                    <h2 class="title is-3">Real-World Robot Experiments</h2>
+                    <p class="subtitle is-5" style="margin-bottom: 2rem;">
+                        Lift3D-VLA successfully completes real-world manipulation tasks including pouring water and stacking objects.
                     </p>
                     <div class="columns is-centered">
-                        <div class="column is-full">
-                            <figure class="image">
-                                <img src="./static/images/4_ablations.png" alt="Ablation study results">
-                                <figcaption class="has-text-centered mt-2">
-                                    Qualitative ablation study results across three camera views from the Waymo dataset.
-                                </figcaption>
-                            </figure>
+                        <div class="column is-6">
+                            <p class="has-text-weight-semibold mb-2">Pour Water</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pour_water/original.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="column is-6">
+                            <p class="has-text-weight-semibold mb-2">Stack Cola</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/stack_cola/original.mp4" type="video/mp4">
+                            </video>
                         </div>
                     </div>
                 </div>
@@ -846,151 +416,101 @@
         </div>
     </section>
 
-    <!-- Lane Change Video Section -->
-    <section id="lane-change-comparison-section" class="section video-section">
+    <!-- Generalization Experiments Section -->
+    <section class="section video-section">
         <div class="container is-max-desktop">
             <div class="columns is-centered has-text-centered">
                 <div class="column is-11">
-                    <h2 class="title is-3">New: Lane Change Novel View Synthesis</h2>
+                    <h2 class="title is-3">Generalization Experiments</h2>
+                    <p class="subtitle is-5" style="margin-bottom: 2rem;">
+                        Lift3D-VLA generalizes robustly to unseen objects, backgrounds, and lighting conditions across multiple tasks.
+                    </p>
 
-                    <!-- Offset Selection Buttons -->
-                    <div id="lane-offset-buttons" class="mb-5">
-                        <button id="lane-offset-0.5" class="button is-warning is-active">0.5m Offset</button>
-                        <button id="lane-offset-1.0" class="button">1.0m Offset</button>
-                        <button id="lane-offset-1.5" class="button">1.5m Offset</button>
-                    </div>
-
-                    <!-- Video Selection Buttons -->
-                    <div id="lane-change-buttons" class="mb-5">
-                        <button id="lane-scene053" class="button is-primary">Scene 053</button>
-                        <button id="lane-scene080" class="button">Scene 080</button>
-                        <button id="lane-scene089" class="button">Scene 089</button>
-                        <button id="lane-scene546" class="button">Scene 546</button>
-                        <button id="lane-scene640" class="button">Scene 640</button>
-                    </div>
-
-                    <!-- Video Direction Buttons -->
-                    <div id="lane-direction-buttons" class="mb-5">
-                        <button id="lane-left" class="button is-info is-active">Left View</button>
-                        <button id="lane-right" class="button">Right View</button>
-                    </div>
-
-                    <!-- Video Comparison Container -->
-                    <div id="lane-change-stack-container" class="video-stack-container mb-5">
-                        <div class="video-stack-wrapper">
-                            <div class="video-title">Unchanged GT</div>
-                            <video id="lane-gt-video" width="100%" height="auto" loop playsinline autoplay muted>
-                                <source src="./static/videos_LaneChange/UnchangedGT/ours/053.mp4" type="video/mp4">
+                    <!-- Pick Banana -->
+                    <h3 class="title is-4" style="text-align:left; margin-bottom:1rem;">Pick Banana</h3>
+                    <div class="columns is-centered" style="margin-bottom:2rem;">
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Background</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pick_banana/unseen_background.mp4" type="video/mp4">
                             </video>
                         </div>
-                        <div class="video-stack-wrapper">
-                            <div class="video-title">S3Gaussian</div>
-                            <video id="lane-s3gs-video" width="100%" height="auto" loop playsinline autoplay muted>
-                                <source src="./static/videos_LaneChange/LaneChangeOffset-0.5m/S3Gaussian/left/053.mp4" type="video/mp4">
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Object</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pick_banana/unseen_object.mp4" type="video/mp4">
                             </video>
                         </div>
-                        <div class="video-stack-wrapper">
-                            <div class="video-title">S3Gaussian + Ours</div>
-                            <video id="lane-ours-video" width="100%" height="auto" loop playsinline autoplay muted>
-                                <source src="./static/videos_LaneChange/LaneChangeOffset-0.5m/ours/left/053.mp4" type="video/mp4">
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Lighting</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pick_banana/unseen_light.mp4" type="video/mp4">
                             </video>
                         </div>
                     </div>
 
-                    <!-- Speed Control Buttons -->
-                    <div class="speed-controls mb-5">
-                        <button class="button is-small" onclick="changeLaneVideoSpeed(0.1)">0.1x</button>
-                        <button class="button is-small is-active" onclick="changeLaneVideoSpeed(0.3)">0.3x</button>
-                        <button class="button is-small" onclick="changeLaneVideoSpeed(0.5)">0.5x</button>
-                        <button class="button is-small" onclick="changeLaneVideoSpeed(0.8)">0.8x</button>
-                        <button class="button is-small" onclick="changeLaneVideoSpeed(1.0)">1.0x</button>
-                    </div>
-
-                    <!-- Results Description -->
-                    <div class="results-description">
-                        <p class="section-subtitle">
-                            Novel view synthesis at <span id="current-offset" class="highlight">0.5m lateral offset</span>
-                        </p>
+                    <!-- Pour Water -->
+                    <h3 class="title is-4" style="text-align:left; margin-bottom:1rem;">Pour Water</h3>
+                    <div class="columns is-centered">
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Background</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pour_water/unseen_backgrond.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Object</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pour_water/unseen_object.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="column is-4">
+                            <p class="has-text-weight-semibold mb-2">Unseen Lighting</p>
+                            <video autoplay muted loop playsinline style="width:100%; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.12);">
+                                <source src="./static/videos/mp4_cropped_x10/pour_water/unseen_light.mp4" type="video/mp4">
+                            </video>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Temporal Embedding Evolution Section -->
-    <section id="temporal-embedding-section" class="section video-section"> 
-        <div class="container is-max-desktop">
-            <div class="columns is-centered has-text-centered">
-                <div class="column is-12">
-                    <h2 class="title is-3">New: Temporal Embedding Evolution</h2>
-
-                    <!-- Video Container -->
-                    <div class="video-compare-container mb-4" style="max-width: 900px; margin: 0 auto;">  <!-- style -->
-                        <video id="embedding-evolution-video" width="100%" height="auto" loop playsinline autoplay muted>
-                            <source src="./static/videos_LaneChange/temporal_embedding_evolution.mp4" type="video/mp4">
-                        </video>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="content has-text-centered mt-4">
-                        <p class="subtitle">
-                            The temporal embedding matrix evolves from coarse patterns to
-                            <span class="highlight">increasingly fine-grained temporal features</span> throughout the training process.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Bibtex Section -->
-
+    <!-- BibTeX Section -->
     <section class="section" id="BibTeX">
         <div class="container is-max-desktop content">
             <div class="columns is-centered">
                 <div class="column is-11 content">
                     <h2 class="title">BibTeX</h2>
-                    <!-- Option 1: Cool blue gradient -->
-                    <pre style="border-radius: 6px; background: linear-gradient(to right, 
+                    <pre style="border-radius: 6px; background: linear-gradient(to right,
     rgba(255, 243, 206, 0.556) 0%,
     rgba(255, 240, 245, 0.7) 50%,
     rgba(255, 245, 250, 0.7) 100%
-); padding: 20px; color: black;"><code>@article{wei2024emd,
-        author    = {Wei, Xiaobao and Wuwu, Qingpo and Zhao, Zhongyu and Wu, Zhuangzhe and Huang, Nan and Lu, Ming and Ma, Ningning and Zhang, Shanghang},
-        title     = {EMD: Explicit Motion Modeling for High-Quality Street Gaussian Splatting},
-        journal   = {Under Review},
-        year      = {2024},
-    }</code></pre>
+); padding: 20px; color: black;"><code>@article{lift3dvla2024,
+  title     = {Lift3D-VLA: Lifting VLA Models to 3D Geometry and Dynamics-Aware Manipulation},
+  author    = {Anonymous Authors},
+  journal   = {Under Review},
+  year      = {2024},
+}</code></pre>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer Section -->
+    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="columns is-centered">
                 <div class="column is-8 has-text-centered">
                     <div class="content">
-                        <div class="mb-4">
-                            <a class="icon-link" href="https://arxiv.org/pdf/2411.15582">
-                                <i class="fas fa-file-pdf"></i>
-                            </a>
-                            <!-- Changed to point to current page with # -->
-                            <a class="icon-link" href="#" class="external-link">
-                                <i class="fab fa-github"></i>
-                            </a>
-                        </div>
                         <p>
-                            This website template is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. We appreciate the authors for sharing their code.
+                            This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. We appreciate the authors for sharing their template.
                         </p>
                     </div>
                 </div>
             </div>
         </div>
     </footer>
-
-
 
 </body>
 

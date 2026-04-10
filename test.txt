@@ -1,0 +1,1163 @@
+JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+Lift3D-VLA: Lifting VLA Models to 3D Geometry
+and Dynamics-Aware Manipulation
+IEEE Publication Technology, Staff, IEEE,
+Abstract—Recently, Vision–Language–Action (VLA) models
+have demonstrated strong generalization across diverse tasks.
+However, effective robotic manipulation in physical environments
+fundamentally requires geometric understanding and spatial
+reasoning. While some VLA approaches attempt to incorporate
+3D information, they are constrained by limited data availability
+and geometric information loss in current 3D encoding pipelines,
+and fail to jointly capture 3D geometry and temporally structured
+actions in dynamic environments. To address these limitations,
+we introduce Lift3D-VLA, a unified VLA framework that equips
+models with explicit 3D point cloud reasoning and enables
+temporally coherent action generation. First, building upon our
+previous work Lift3D, an enhanced 2D model-lifting strategy
+is proposed to geometrically align 3D points with pretrained
+2D positional embeddings. This design enables direct pointcloud encoding within the VLA vision encoder while minimizing
+spatial information loss. Based on explicit 3D inputs, we propose
+Geometry-Centric Masked Autoencoding (GC-MAE), a dualobjective self-supervised framework that reconstructs the current
+point cloud while predicting its future geometric evolution. This
+formulation allows the 2D vision encoder to internalize both 3D
+structure and physical dynamics. To fully exploit 3D representations, we further design layer-wise temporal action modeling,
+which leverages multiple layers of the LLM to collaboratively
+predict action chunks, enabling temporally consistent predictions.
+Across 22 simulated tasks and 8 real-world manipulation tasks,
+Lift3D-VLA achieves 10.8% and 10.5% higher mean success
+rates on MetaWorld and RLBench than the best-performing
+prior VLA methods, and outperforms the strongest real-world
+baseline by 4 percentage points, while exhibiting stronger generalization to out-of-distribution perturbations. Project website:
+http//sites.google.com/view/lift3dvla
+Index Terms—Robotic Manipulation, Vision–Language–Action
+Model, 3D Representation.
+I. INTRODUCTION
+Vision–Language–Action (VLA) models have recently
+emerged as a promising paradigm for robotic manipulation [2]–[4], showing strong generalization across diverse tasks
+by combining visual perception, language conditioning, and
+action generation. Despite this progress, robotic manipulation fundamentally requires spatial reasoning in the physical
+world [5]–[9]: the robot must infer 3D structure, reason about
+geometric relationships (e.g., reachability, occlusion, and contact), and plan actions that remain temporally consistent as the
+geometry evolves. Purely 2D VLA pipelines often struggle to
+reliably capture these geometric constraints, especially under
+viewpoint changes or in cluttered environments.
+A natural direction is to explicitly inject 3D information
+into VLA models or manipulation policies, with existing
+This paper was produced by the IEEE Publication Technology Group. They
+are in Piscataway, NJ.
+Manuscript received April 19, 2021; revised August 16, 2021.
+approaches primarily falling into two paradigms. First, some
+methods directly encode point clouds, voxels, or multi-view
+3D observations [9]–[16]. However, unlike large-scale 2D vision–language pretraining, large robotic 3D datasets and strong
+3D foundation encoders remain scarce, making it difficult
+to learn transferable and generalizable 3D representations.
+Second, other approaches rely on cross-modal transformations,
+such as lifting 2D features into 3D space [5], [17]–[20]
+or projecting 3D point clouds into multi-view images [21]–
+[24]. However, such transformations are inherently lossy,
+compromising geometric fidelity and weakening the structural
+correspondence between 2D pretrained representations and
+3D spatial structure. This ultimately limits scalability and
+diminishes the benefits of large-scale 2D pretraining.
+To mitigate these bottlenecks, our prior work Lift3D [1]
+innovatively proposes a 2D-pretraining reuse paradigm to endow 2D foundation models with 3D geometric understanding
+for robotic manipulation. Rather than training a new 3D
+foundation model from scratch, Lift3D progressively augments
+a pretrained 2D backbone with (i) implicit 3D representation
+enhancement via a task-aware masked autoencoder (MAE),
+and (ii) an explicit point-cloud encoding that aligns 3D points
+with pretrained 2D positional priors. This design largely
+eliminates the need for massive 3D pretraining data, reduces
+spatial fidelity loss introduced by cross-modal transformations,
+and maintains computational efficiency and scalability.
+Despite its effectiveness, Lift3D still exhibits two limitations
+that become critical when applied to VLA models in dynamic
+environments. First, its implicit enhancement remains indirect:
+the masked reconstruction objective operates primarily on
+RGB and depth signals, which do not explicitly enforce
+learning of coherent 3D geometric structure. As a result, the
+model struggles to acquire robust geometric understanding
+that generalizes across viewpoints and physical interactions.
+Second, Lift3D is not designed to jointly model evolving 3D
+geometry and temporally structured actions, which can lead to
+brittle behavior when long-horizon, time-consistent decisions
+are required. In dynamic manipulation scenarios, an agent
+must reason about how the scene geometry evolves over time
+while generating temporally coherent action sequences [25]–
+[27]. These limitations highlight the need for a framework that
+learns rich 3D structure, models how geometry evolves, and
+generates temporally consistent actions conditioned on that
+evolving geometry.
+In this paper, we propose Lift3D-VLA, a unified VLA
+framework that enables explicit 3D point-cloud reasoning and
+temporally structured action generation. Building upon the
+core philosophy of Lift3D, our approach preserves and fullyJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 23D
+Encoder
+Block 1
+Block 2
+LLM
+Block n
+Policy
+Head
+Actions
+a) Directly encode point clouds
+Images
+b) Lifting 2D features into 3D space
+2D
+Encoder
+Cross
+modality
+Block 1
+Block 2
+LLM
+Block n
+3D tokens
+Scarcity of large-scale 3D data limits generalization
+Lossy transformation reduces geometric fidelity
+a) Previous 3D VLA
+2D
+Encoder
+Visible
+tokens
+All
+tokens
+Current
+Point Cloud
+Future
+Point Cloud
+Reconstruction
+Forecasting
+Stage 1 Geometry-
+Centric MAE
+Point cloud
+Block 1
+LLM
+Block n2
+Align 3D Points with 2D
+Positional Embeddings
+2D
+Encoder
+Image
+Block n3
+Block n1
+" !"&
+" !"#
+" !"%
+Actions
+Policy
+Head
+Actions
+Point cloud
+Stage 2 Layer-wise
+temporal action modeling
+Comparison
+Realworld S.R. (10 tasks)
+Simulation S.R. (22 tasks)
+! !.. 3DS-VLA
+SpatialVLA Ours
+b) Lift3D-VLA(Ours)
+69
+57
+75
+86
+30
+40
+50
+60
+70
+80
+90
+69
+57
+75
+86
+30
+40
+50
+60
+70
+80
+90
+Fig. 1: Overview. a) Unlike previous 3D VLA methods that encode point clouds either with newly introduced 3D encoders
+or by projecting features between 2D and 3D spaces, b) We propose Lift3D-VLA, equipping 2D VLA models with explicit
+3D reasoning and temporally coherent action generation. In Stage 1, we introduce Geometry-Centric MAE, which reconstructs
+the present point cloud while predicting its future geometric evolution, systematically improving implicit 3D representations.
+In Stage 2, following our previous work Lift3D [1], 3D points are explicitly aligned with 2D positional embeddings to enable
+direct point-cloud encoding. We further propose layer-wise temporal action modeling, which leverages multiple layers of the
+LLM to predict temporally consistent actions. Across 22 simulated and 10 real-world tasks, Lift3D-VLA achieves SOTA results.
+leverages large-scale 2D pretrained knowledge while introducing new components that strengthen implicit 3D physical
+understanding within VLA models. Specifically, we propose
+Geometry-Centric Masked Autoencoding (GC-MAE). Given a
+single RGB image, GC-MAE reconstructs the corresponding
+point cloud under a temporally asymmetric self-supervision
+scheme, jointly recovering the present geometry and predicting
+its future geometric evolution. This recover–forecast formulation encourages the model to capture physical dynamics in
+addition to static structure, enabling the VLA’s 2D encoder to
+develop robust implicit 3D physical understanding. Additionally, we extend Lift3D to support more faithful and efficient
+explicit 3D encoding. By leveraging camera parameters, we
+directly align 3D points with 2D positional embeddings, removing the multiple virtual projections required in the original
+Lift3D. This simplified design enables point-cloud tokens to
+be processed by pretrained 2D backbones while minimizing
+spatial information loss. Finally, building on the learned 3D
+representations, we introduce layer-wise temporal action modeling to improve action generation in dynamic environments.
+Instead of relying on a separate decoding head to predict
+action chunks [4], [28], [29], our method leverages sequence
+representations from intermediate to deep LLM layers to
+capture temporal dependencies. Multiple layers consecutively
+predict each step within the action chunk, resulting in more
+temporally coherent and execution-stable actions.
+Compared with Lift3D, we scale up pretraining to equip
+Lift3D-VLA with richer prior knowledge. Specifically, we perform implicit GC-MAE self-supervised training on 200K trajectories and robotic pretraining on 400K trajectories collected
+from large-scale robotic datasets [30]–[33]. The downstream
+evaluation is also extended by introducing dual-arm real-world
+experiments beyond those considered in Lift3D. Across 22
+simulated tasks and 8 real-world manipulation tasks, Lift3DVLA achieves 10.8% and 10.5% higher mean success rates
+on MetaWorld and RLBench than prior state-of-the-art VLA
+methods, respectively, and outperforms the strongest realworld baseline by 4 percentage points. We further validate its
+long-horizon real-world manipulation capability on tasks such
+as repeatedly scooping eggs from a pan while continuously
+adapting to dynamic environmental changes. In summary, our
+main contributions are:
+• We propose Lift3D-VLA, a unified framework that integrates explicit 3D point-cloud reasoning with temporally
+structured action generation, supported by large-scale
+robotic data pretraining.
+• We propose Geometry-Centric Masked Autoencoding, a
+self-supervised scheme that reconstructs the present point
+cloud while forecasting its future geometric evolution
+from a single RGB observation, enabling the model to
+learn stronger 3D implicit representations.
+• We develop a layer-wise temporal action modeling strategy that leverages sequence representations from consecutive LLM layers to predict action steps, improving
+temporal coherence in dynamic physical environments.
+II. RELATED WORK
+A. Representation Learning for Robotics
+Recent progress in pretrained visual representations has
+been largely driven by self-supervised learning paradigms such
+as contrastive learning [34]–[36], self-distillation [37], and
+MAE [38]. Building upon these advances, several works aim
+to enhance visual representations to better support robotic perception and control. For instance, R3M [39] learns universalJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3
+embodied representations from large-scale human video data
+using contrastive learning, VIP [40] produces dense reward
+functions for unseen robotic tasks, and MVP [41], VC-1 [42],
+and Voltron [43] explore MAE-style pretraining for robotic
+perception. However, these approaches are still primarily built
+upon 2D visual representations, which often lack the spatial fidelity required for complex manipulation. To address
+this limitation, recent work explores 3D-aware robotic representations. One approach learns geometry-aware representations through multi-view modeling or reconstruction, where
+methods such as MV-MWM [44], 3D-MVP [45], SPA [46],
+CL3R [47], and HyperMVP [48] learn consistent geometric
+features across views and align 3D structure with pretrained
+2D semantic representations. Another approaches [49]–[52]
+integrate geometric modeling more directly into policy learning frameworks, which improve spatial grounding through
+multi-view geometry, robot-centric reconstruction, canonical
+3D coordinates, or fused RGB-D scene representations. Different from the aforementioned approaches, our previous work
+Lift3D [1] leverages large-scale 2D foundation models and
+progressively augments them with implicit 3D representations,
+enabling enhanced spatial modeling while avoiding learning
+pretrained knowledge from scratch. Building upon Lift3D, we
+further propose Geometry-Centric Masked Autoencoding, a
+dual-objective self-supervised framework that reconstructs the
+present point cloud while predicting its future state, which
+explicitly enforces the learning of coherent 3D geometric
+structure and physical dynamics.
+B. Vision-Language-Action Models
+VLA models extend pretrained vision-language models
+(VLMs) to robotic control, enabling robots to follow natural
+language instructions while benefiting from large-scale semantic priors [2], [53]–[55]. Early VLA research primarily focused
+on scaling robot demonstration data and adapting pretrained
+VLMs for policy learning [2], [55]–[57], demonstrating improved generalization across manipulation tasks. Subsequent
+works further improve the expressiveness of VLA policies
+by introducing continuous generative policy heads, where
+diffusion-based approaches model complex action distributions through iterative denoising [3], [28], [58], while flowmatching formulations provide a more efficient alternative for
+continuous action generation [4], [59]. Building upon these
+generation paradigms, another line of VLA research [60]–
+[63] investigates the use of future state prediction to facilitate physical world modeling and improve action generation.
+Motivated by the need for richer and more unified representations, recent approaches attempt to integrate generative
+and understanding capabilities within a single model using
+mixture-of-transformers architectures [29], [64]–[66]. Beyond
+2D representations, some works focus on enhancing spatial
+understanding and reasoning in VLA models. Methods such
+as 3DS-VLA [24], SpatialVLA [20], and PointVLA [16] introduce geometric information by aligning visual features with
+spatial coordinates or incorporating point cloud observations,
+while other approaches extend the perception space toward
+multisensory representations by integrating visual, depth, or
+tactile signals [67]. In contrast to previous works, Lift3DVLA builds upon Lift3D’s 2D model lifting strategy, allowing
+for the explicit incorporation of 3D point clouds, and further
+introduces layer-wise temporal action modeling to generate
+temporally coherent actions from 3D inputs.
+III. PRELIMINARIES
+Task Formulation. VLA models aim to enable robots to
+execute diverse tasks by mapping visual observations and
+language instructions to action sequences. Formally, given
+a natural language task instruction ℓ and observation ot
+at timestep t, a VLA policy πθ predicts an action chunk
+(at, at+1, . . . , at+H−1) for task execution:
+πθ : (ℓ, ot) → (at, at+1, . . . , at+H−1), (1)
+where H denotes the action chunk size and the observation
+ot = {I1
+t , . . . , In
+t , Pt, qt} comprises n camera images, point
+cloud Pt, and proprioceptive state qt (e.g., joint positions).
+Each action at ∈ R7 represents the end-effector pose:
+at = [∆x, ∆y, ∆z, Rr , Rp, Ry , g], (2)
+where ∆x, ∆y, ∆z represent relative Cartesian position offsets, Rr , Rp, Ry denote absolute Euler angles (roll, pitch, yaw)
+for rotation, and g ∈ [0, 1] indicates the gripper width. For
+dual-arm manipulation tasks, the action space is extended to
+at ∈ R14 by concatenating two 7-DoF vectors corresponding
+to the left and right arms.
+VLA Architecture. VLA models largely inherit the design
+of VLMs, consisting of three components: (1) a vision encoder
+that processes multi-view images into visual tokens, (2) a
+large language model (LLM) that models multimodal features,
+and (3) an action expert that generates action predictions,
+either using the LLM itself or an additional action head.
+These components are typically initialized from pre-trained
+VLMs to leverage internet-scale vision–language knowledge.
+The training objective maximizes the log-likelihood of action
+chunks given observations and instructions:
+max
+θ E(at:t+H−1 ,ot,ℓ)∼D [log πθ (at:t+H−1 | ot, ℓ)] . (3)
+The action outputs can be represented as either discrete
+tokenizations [55] or continuous formulations, such as diffusion [3], [68] and flow matching [4], [69], which provide more
+expressive action distributions for complex manipulation tasks.
+IV. PROPOSED METHOD (LIFT3D-VLA)
+Our previous work, Lift3D [1], is limited by its reliance on
+indirect 3D reconstruction objectives, which hinders effective
+geometric and physical modeling. Furthermore, it does not
+jointly model evolving geometry and temporally structured
+actions, resulting in brittle performance in long-horizon dynamic scenarios. To address these limitations, as shown in
+Figure 2, we propose Lift3D-VLA, a unified VLA framework that systematically equips VLA models with explicit
+3D point cloud reasoning and facilitates temporally coherent action generation. We begin by introducing the overall
+VLA architecture in Section IV-A. We then present the 2D
+model lifting strategy in Section IV-B, following our previousJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4Point Cloud
+3D Tokenizer
+View 1
+Mean
+View 6
+3D Tokens Lora
+Pretrained
+2D PEs
+Virtual Project
+2D
+Encoder Block 1
+LLM
+Block n2
+Block n3
+Block n1
+" !"&
+" !"#
+" !"%
+Denoised Action chunk
+3D PEs
+PEs: Position Embeddings
+: Mapping Example
+MAE Decoder
+All tokensVisible tokens
+Reconstruction loss
+: Frozen : Fine-tune
+2D
+Encoder
+Current
+Point Cloud
+Future
+Point Cloud
+Point Decoder
+Forecasting loss
+2D Robotic Data VGGT 3D Point Clouds
+Ground Truth
+3D Tokenizer
+Lora
+Point Cloud
+a) 2D Model-lifting Strategy b) Stage 1: Geometry-Centric MAE (Implicit 3D Representation)
+Noise
+c) Stage 2: Layer-wise Temporal Action Modeling
+Fig. 2: Lift3D-VLA Framework. a) Following our previous work Lift3D, we perform virtual projection to align 3D points
+with pretrained 2D positional embeddings (PEs), thereby constructing geometry-aligned 3D PEs that enable the 2D vision
+encoder in VLA models to directly process point cloud inputs. b) Stage 1. To enhance 3D physical representations, we first
+leverage VGGT to synthesize 3D point clouds from large-scale robotic data, which serve as self-supervised training targets. We
+then introduce Geometry-Centric MAE, a framework that reconstructs the current point cloud while simultaneously predicting
+its future geometric evolution, enabling the model to capture physical dynamics in addition to static spatial structure. c) Stage
+2. Building on the strengthened 3D representations, we further propose layer-wise temporal action modeling, which leverages
+the sequence modeling capabilities of intermediate and deep LLM layers to generate temporally consistent action sequences.
+work Lift3D, enabling VLA models to directly encode 3D
+point clouds. In Section IV-C, we describe our GeometryCentric Masked Autoencoding (GC-MAE), which enhances
+the implicit 3D and temporal-aware encoding capabilities of
+the VLA’s 2D encoder. Building on these representations,
+we introduce a novel layer-wise temporal action modeling
+approach in Section IV-D, which enables temporally coherent
+action predictions. Finally, we present the training objectives
+in Section IV-E.
+A. Lift3D-VLA Architecture
+To enable robots to reason about 3D spatial structures and
+generate precise manipulation actions, we design a unified
+VLA architecture that integrates 2D visual observations, 3D
+point clouds, and language instructions. Our model is built
+upon a VLM backbone, with parameters initialized from
+Prismatic VLM [54]. Notably, 2D and 3D observations share
+a common vision encoder, while employing modality-specific
+tokenizers and positional embeddings. All raw multisensory
+inputs are projected into a unified token sequence for the LLM,
+enabling multimodal reasoning and action prediction.
+Vision Encoder. We utilize a dual-encoder design combining
+SigLIP [70] and DINOv2 [71] to capture complementary
+visual representations, including both global semantic context
+and fine-grained details. For each input RGB observation
+It ∈ RH×W ×3 (with H = W = 224), the shared vision
+encoder processes the image and extracts dense visual features.
+This produces feature embeddings f SigLIP ∈ RNv ×1024 and
+f DINO ∈ RNv ×1152, where Nv = 256 denotes the number
+of visual tokens. The resulting features are then concatenated
+along the channel dimension to form a unified visual representation for downstream processing.
+3D Point Cloud Tokenizer. To augment 2D visual features with explicit 3D geometric information, we introduce
+a dedicated point cloud tokenizer that converts raw point
+clouds into structured token representations. The tokenizer
+consists of three stages: farthest point sampling [72] for
+downsampling, k-nearest neighbors aggregation for capturing
+local geometric structures, and a learnable linear projection
+for feature embedding. Specifically, given a point cloud input
+P C ∈ RB×1024×3, the tokenizer produces a compact representation f pc ∈ RB×N pc×dh with Npc = 256 tokens. The resulting
+tokens are subsequently encoded with spatially aligned 3D
+positional embeddings (described in Section IV-B) and fed
+into the shared vision encoder to extract spatial features.
+LLM Backbone. We adopt the 7B LLaMA2 model [73]
+as the LLM backbone for Lift3D-VLA. LLaMA2 follows a
+decoder-only transformer architecture with 32 layers, where
+each layer transforms the input token sequence into progressively refined high-dimensional representations. Visual tokens,
+geometric tokens, and linguistic tokens are projected into
+the LLM’s word embedding space and concatenated into
+a unified sequence f ∈ RB×Nt×dh . This token sequence
+is then processed jointly by the transformer layers through
+standard self-attention and feed-forward operations. Unlike
+prior approaches that introduce additional heads after the LLM
+for action prediction [4], [28] or rely on the final LLM layer for
+next-token prediction [3], [74], we instead leverage sequence
+representations from intermediate to deep LLM layers to
+generate temporally coherent action chunks, as detailed inJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5
+Section IV-D.
+B. 2D Model-lifting Strategy
+In this section, we propose a lifting mechanism that enables the 2D vision encoder in VLA models to explicitly
+process point cloud inputs, building upon our previous work,
+Lift3D [1]. Existing approaches typically either project 3D
+point clouds into multi-view images [21], [22] or lift 2D
+features into 3D representations [5], [17]. However, such
+modality transformations often lead to the loss of geometric
+structure and spatial consistency, making it challenging to
+effectively represent 3D data for robotic manipulation. Meanwhile, positional embeddings (PEs) in VLA architectures play
+a critical role in encoding spatial relationships among tokens.
+A straightforward solution is to design new 3D positional embeddings, but this may introduce a mismatch with pretrained
+2D models and hinder knowledge transfer.
+To address this, as illustrated in Figure 2 a), we project 3D
+tokens onto multiple virtual planes and reuse pretrained 2D
+positional embeddings for 3D encoding. Specifically, raw point
+clouds are first transformed into high-dimensional features of
+size B × 128 × 768 using the 3D point cloud tokenizer. We
+denote the spatial coordinates of these tokens as {Ci
+3D }k
+i=1.
+Each 3D coordinate is then projected onto n virtual planes,
+producing corresponding 2D coordinates {Cij
+2D }n
+j=1. This projection is parameter-free and efficient. We adopt a cube-based
+projection with six faces to ensure comprehensive coverage
+of spatial information. In contrast to Lift3D, which relies
+on randomly assigned front-view virtual planes, we leverage
+camera extrinsic parameters to align the virtual front view with
+the observation camera. This alignment enforces a consistent
+projection viewpoint, improving geometric consistency and
+reducing distortion. Each virtual plane shares the pretrained 2D
+positional embedding grid. Based on the projected coordinates,
+each 3D token is associated with n positional embeddings,
+denoted as {P E2D (Cij
+2D )}n
+j=1. To obtain a unified positional
+representation, we aggregate these embeddings by averaging:
+P E3D = 1
+n
+nX
+j=1
+P E2D (Cij
+2D ). (4)
+The resulting P E3D is combined with the 3D token features
+and fed into the 2D vision encoder. By reusing pretrained 2D
+positional embeddings from multiple views, this design captures diverse spatial relationships while mitigating information
+loss. With explicit 3D inputs available, we further propose a
+novel 3D self-supervised training framework to enhance the
+3D representations in VLA models.
+C. Geometry-Centric Masked Autoencoding
+In our preliminary work, Lift3D [1], we enhance 2D
+foundation models with implicit 3D awareness by reconstructing depth maps and RGB from task-relevant patches.
+While effective for static spatial understanding, this design
+relies on “2.5D” depth representations and does not explicitly
+enforce coherent 3D geometric structure. Moreover, it treats
+observations independently, overlooking the temporal dynamics required for continuous manipulation. To address these
+limitations, as shown in Figure 2 b), we propose GeometryCentric Masked Autoencoding (GC-MAE), a 3D temporalaware self-supervised learning framework that leverages the
+2D Model-lifting Strategy to directly encode point cloud
+inputs, and jointly models geometric structure and its temporal
+evolution via a scalable point cloud synthesis pipeline.
+Scalable 3D Data Synthesis. We adopt a scalable 3D data
+synthesis pipeline to augment existing 2D robotic datasets with
+3D point clouds. As most robotic datasets [31], [33], [75]
+provide only RGB observations without depth and camera parameters, we leverage VGGT [76], a feed-forward transformer
+pretrained on large-scale visual-geometry data, to generate
+pseudo 3D annotations. Given an RGB observation It ∈
+RH×W ×3, VGGT directly predicts the corresponding point
+cloud ˆPt ∈ RN ×3. We apply VGGT to all observations in the
+pretraining dataset (Table I), producing pseudo point clouds
+that provide geometric supervision complementary to 2D
+visual features. We further empirically verify that the quality of
+these synthesized point clouds is sufficient to support reliable
+self-supervised training. Building on the synthesized 3D data,
+we jointly capture static geometric structure and dynamic
+evolution by designing a dual-branch decoding framework
+over shared latent representations.
+Masked Point Reconstruction. To model static geometric
+structures, we adopt a masked autoencoding paradigm [77]
+over 3D point tokens. Specifically, a high proportion of input
+tokens are randomly masked, and the encoder processes only
+the visible subset Pv
+t . A lightweight transformer decoder
+reconstructs the 3D coordinates of masked tokens from encoded visible tokens and learnable mask tokens. This intraframe geometric completion is supervised using the Chamfer
+Distance (CD):
+Lstatic = X
+p∈Pm
+t
+min
+ˆp∈ ˆPm
+t
+∥p − ˆp∥2
+2 + X
+ˆp∈ ˆPm
+t
+min
+p∈Pm
+t
+∥ˆp − p∥2
+2, (5)
+where Pm
+t denotes the ground-truth point set of masked
+tokens, and ˆPm
+t denotes the reconstructed point set.
+Future Geometric Prediction. To model temporal dynamics,
+we introduce a future prediction branch that captures interframe geometric evolution without explicit motion supervision.
+Given the visible 3D tokens Pv
+t at time t, the decoder predicts
+their corresponding geometry in the next frame ˆPv
+t+1. Unlike
+the static reconstruction objective, this branch enforces temporal causality by learning how geometry evolves over time
+(e.g., object motion or end-effector trajectories). The temporal
+loss is defined as:
+Ldynamic = X
+p∈Pv
+t+1
+min
+ˆp∈ ˆPv
+t+1
+∥p− ˆp∥2
+2 + X
+ˆp∈ ˆPv
+t+1
+min
+p∈Pv
+t+1
+∥ˆp−p∥2
+2 (6)
+To adapt the vision encoder for 3D undertanding while
+preserving large-scale pretrained priors, we inject Low-Rank
+Adaptation (LoRA) [78] into the attention layers. We freeze
+most backbone parameters and update only the LoRA modules
+and the 3D tokenizer, ensuring parameter efficiency while
+mitigating catastrophic forgetting.JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6
+D. Layer-wise Temporal Action Modeling
+Despite learning strong 3D representations, Lift3D relies on
+a simple policy head on top of the 2D vision encoder for action
+prediction, which limits its ability to fully exploit 3D structural reasoning and constrains its generalization capability.
+To address this limitation, we leverage the intrinsic sequence
+modeling capability of Transformer-based LLMs [79], [80] to
+capture temporal dependencies in physical control. Moreover,
+recent VLA models have shown that action prediction need
+not be restricted to the final layer, as intermediate representations often contain rich and actionable information [81],
+[82]. Building on these insights, as illustrated in Figure 2
+c), we propose Lift3D-VLA, which introduces a layer-wise
+temporal action modeling strategy to better utilize the learned
+spatial features in VLA models while effectively modeling
+temporal dependencies. Instead of relying solely on the final
+layer, we progressively decode action sequences across layers,
+where each layer predicts a corresponding action step. This
+layer-wise design naturally captures temporal dependencies,
+enabling more coherent modeling of action sequences.
+Specifically, given an action chunk of horizon H starting
+from time step t, we assign each future step t + k (where
+k ∈ {0, . . . , H − 1}) to a corresponding intermediate layer
+lk of the LLM backbone. We then instantiate H action layer
+{φk}H−1
+k=0 , where each layer φk predicts the denoised action
+at time step t + k from the hidden state hlk :
+ˆεk = φk(hlk ), k ∈ {0, . . . , H − 1}, (7)
+where lk denotes the layer index assigned to step k. Ablation
+studies are conducted to analyze the impact of the number
+of layers used for action decoding and the interval between
+decoding layers. In practice, we empirically find that leveraging the deeper layers of the LLM and uniformly spacing
+the decoding layers yields the best performance. For example,
+with a 32-layer LLM backbone and an action chunk of H = 4,
+we uniformly select layers 20, 24, 28, 32 from the deeper
+portion of the network to decode actions, assigning one action
+step to each selected layer. More generally, when the action
+horizon exceeds the number of selected layers, each layer
+can predict multiple consecutive action steps, enabling flexible
+and scalable action decoding. This hierarchical formulation
+naturally leverages the temporal conditioning across different
+layers of the LLM: deeper layers (corresponding to future
+time steps) inherently attend to features from shallower layers
+(representing current or near-term states), thereby enabling
+temporally consistent modeling. Furthermore, distributing supervision across network depths facilitates the learning of
+robust features at multiple levels of abstraction, improving
+closed-loop stability during dynamic interactions.
+E. Training Objectives
+As shown in Figure 2 b) and c), our training pipeline consists of two stages: (1) Geometry-Centric Masked Autoencoding (GC-MAE) for self-supervised learning, and (2) supervised
+fine-tuning (SFT) on downstream tasks based on the proposed
+layer-wise temporal action modeling. After equipping the 2D
+vision encoder with strong 3D representations in the first stage,
+the second stage further adapts the VLA model for taskspecific action prediction.
+GC-MAE self-supervised learning. We optimize the VLA’s
+2D vision encoder and dual-branch decoder using only geometric supervision, without any action labels. The objective
+of this stage is a weighted sum of the static reconstruction
+(Eq. 5) and dynamic prediction losses (Eq. 6):
+LMAE = Lstatic + λ · Ldynamic. (8)
+The weighting factor λ balances the value of the two losses.
+By minimizing LMAE, the encoder learns representations that
+jointly capture 3D structure and dynamics, thereby equipping
+the VLA’s vision encoder with fundamental 3D understanding
+for downstream robotic manipulation tasks. Note that the
+decoders are used only during Stage 1.
+SFT. During Stage 2, we freeze the encoder and fine-tune
+the LLM backbone along with an action projection MLP,
+which maps the denoised tokens to the action space, using
+task-specific demonstrations. For action prediction, we adopt
+a standard DDPM [83]. Given the layer-wise temporal action
+modeling strategy in Eq. 7, we supervise the denoising process
+simultaneously across all time steps within the action chunk.
+The action generation loss is defined as the average Mean
+Squared Error (MSE) over the horizon H:
+Laction = Ek,s,ε
+
+εk − ˆεθ (z(s)
+t+k, s, hlk ) 2
+2
+
+(9)
+where εk denotes the ground-truth noise added to action
+at+k, z(s)
+t+k is the corresponding noisy action at diffusion
+timestep s, and hlk is the hidden representation from layer
+lk. During inference, we adopt DDIM [84] with 4 denoising
+steps, following prior methods [3], [85].
+V. EXPERIMENT
+In Section V-A, we provide a detailed description of the
+pretraining procedure for Lift3D-VLA. We then benchmark
+Lift3D-VLA against recent VLA models in Section V-B,
+evaluating manipulation performance on the MetaWorld and
+RLBench under both single-task and multi-task regimes. The
+contributions of key pretraining components and architectural
+design choices are further isolated and quantified through
+comprehensive ablation studies in Section V-C. Finally, Section V-D demonstrates the real-world effectiveness of Lift3DVLA on manipulation tasks with both single-arm and dual-arm
+configurations.
+A. Pretraining Configuration
+Following prior VLA research [3], [55], we construct a
+large-scale pretraining corpus by integrating diverse opensource robotic datasets, including Open-X-Embodiment [75],
+DROID [31], and RoboMIND [32]. Specific details regarding
+the data proportions and composition can be found in Table I.
+For these real-world datasets, we apply the 3D data synthesis
+pipeline described in Section IV-C to generate point cloud
+annotations from RGB observations, resulting in over 140,000
+trajectories with synthesized 3D annotations for pretraining.
+For all experiments below, we apply the GC-MAE frameworkJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 7
+to pretrain the 2D vision encoder in Lift3D-VLA. The pretraining phase is conducted on our synthesized 3D dataset
+for 15 epochs using 140,000 trajectories, with a batch size
+of 4096 and learning rate of 1 × 10−4. We employ the
+AdamW optimizer with (β1, β2) = (0.9, 0.999) and a cosine
+learning rate schedule with linear warmup for the first 10% of
+training steps. The dual-branch decoder system consists of four
+Transformer layers for both static and dynamic branches, with
+each layer having eight attention heads and a hidden dimension
+of 512. Point cloud inputs are uniformly subsampled to 1,024
+points per frame for computational efficiency.
+TABLE I: The dataset name and sampling weight used in our
+mixed large-scale pretraining dataset.
+Training Dataset Mixture
+Fractal [56] 9.1% Austin Sirius [86] 1.2%
+Kuka [87] 27.8% CMU Pickup [88] 0.7%
+Bridge [89], [90] 4.1% UTAustin Mutex [91] 1.6%
+Taco Play [92], [93] 2.1% Berkeley Fanuc [94] 0.6%
+Jaco Play [95] 0.3% CMU Stretch [96] 0.1%
+Berkeley Cable [97] 0.2% BC-Z [98] 5.4%
+Roboturk [99] 1.7% FMB Dataset [100] 5.0%
+Viola [101] 0.7% DobbE [102] 1.0%
+Berkeley UR5 [103] 0.9% DROID [31] 7.2%
+Toto [104] 1.5% Stanford Kuka [105] 0.1%
+Language Table [106] 3.1% Robocook [107] 0.1%
+Stanford Hydra [108] 3.2% Maniskill [109] 6.3%
+Austin Buds [110] 0.2% Berkeley RPT [111] 0.1%
+NYU Franka [112] 0.6% QUT Dexterous [113] 0.1%
+Furniture Bench [114] 1.8% RoboSet [115] 1.8%
+UCSD Kitchen [116] <0.1% BridgeData V2 [90] 4.7%
+Austin Sailor [117] 1.6% RoboMind [32] 5.2%
+B. Simulation Experiment
+1) Data Collection: We evaluate on two commonly used
+simulation environments. MetaWorld [118] provides a large
+collection of simulated manipulation tasks designed to assess
+the robustness and versatility of robotic control policies under
+diverse goal configurations. In our evaluation, we consider 13
+tasks that require a wide spectrum of manipulation capabilities, including precise reaching, object insertion, articulated
+object interaction, and contact-rich control: 1) Assembly, 2)
+Bin picking, 3) Box close, 4) Button press, 5) Dial turn, 6)
+Drawer open, 7) Hammer, 8) Hand insert, 9) Peg unplug
+side, 10) Push wall, 11) Reach, 12) Shelf place, and 13)
+Sweep into. All experiments are conducted using a Sawyer
+robotic arm with a parallel-jaw gripper. For each task, we
+collect 100 trajectories using scripted policies provided by
+the benchmark. All RGB observations are captured from a
+single third-view corner camera at a resolution of 224 × 224
+pixels. RLBench [119] is a simulation benchmark built on
+the CoppeliaSim robotics simulator for learning-based robotic
+manipulation. Within this environment, we select 9 tasks that
+cover a range of fundamental manipulation skills: 1) Close
+box, 2) Close laptop, 3) Toilet seat down, 4) Sweep to dustpan,
+5) Close fridge, 6) Take umbrella out, 7) Frame off hanger,
+8) Wine at rack, and 9) Water plants. All tasks are executed
+using a Franka Panda robotic arm with a single front-view
+camera observation. Demonstration trajectories are collected
+using keyframe-based motion planning via the Open Motion
+Planning Library (OMPL) [120], yielding 100 episodes per
+task. We extract key frames from each episode following
+the sparse sampling strategy of prior work [21]. For both
+benchmarks, 3D point cloud annotations are directly extracted
+from the simulation environments via their built-in depth
+rendering APIs and uniformly subsampled to 1,024 points per
+frame.
+2) Single-Task on MetaWorld: We validate our GC-MAE
+pretraining strategy by replacing Lift3D’s visual encoder with
+our pretrained counterpart and benchmarking against the original Lift3D in the single-task setting on MetaWorld, where
+separate models are trained per task following prior work [1].
+Baselines. We benchmark against multiple categories of
+baselines: For 2D visual representation learning, we compare
+with CLIP (ViT-Base) [121], R3M [39], and VC-1 [42], all
+of which are pretrained on large-scale vision datasets and
+adapted for robotic control. For 3D representation learning,
+we include PointNet [72], PointNet++ [122], PointNeXt [123],
+and SPA [46], which are either generic point cloud encoders
+or 3D robotic pretraining methods. We also compare with
+DP3 [14], a diffusion-based 3D manipulation policy.
+Implementation Details. Lift3D and our pretrain-enhanced
+Lift3D share identical training configurations. Both models are
+trained using identical hyperparameters: a three-layer policy
+head with hidden dimensions [256, 256, 256], Adam optimizer,
+and a constant learning rate of 1 × 10−3. During downstream
+fine-tuning, we freeze the backbone parameters and apply
+LoRA [78] to attention layers with rank r = 2. All models
+are trained for 100 epochs across 8 NVIDIA A800 GPUs.
+We perform 25 rollout evaluations every 5 epochs and report
+the average success rate of the checkpoint that achieves the
+highest validation success rate.
+Quantitative Results. Table II reports the manipulation success rates across 13 MetaWorld tasks in both single-task and
+multi-task settings. In single-task experiments, incorporating
+our GC-MAE pretraining consistently improves performance
+across different visual backbones. With CLIP initialization,
+Lift3D(CLIP)† achieves 88.6% average success, outperforming the original Lift3D(CLIP) baseline (82.5%). Similarly, under DINOv2 initialization, Lift3D(DINOv2)† reaches 87.1%,
+compared to 84.0% without pretraining. The gains are particularly evident in tasks requiring sustained spatial precision:
+box-close (100% vs. 92%), shelf-place (72% vs. 42%), sweepinto (92% vs. 72%), and reach (88% vs. 74%). Compared with
+prior representation baselines, our best model substantially
+surpasses VC-1 (67.4%), SPA (72.2%), and DP3 (62.3%),
+validating the effectiveness of integrating large-scale 2D pretrained knowledge with temporally-aware 3D representations.
+3) Multi-Task on MetaWorld and RLBench: To evaluate
+the capability of Lift3D-VLA to handle multiple manipulation
+tasks within a single unified model, we conduct multi-task experiments on MetaWorld and RLBench. Notably, our previous
+work Lift3D is designed for single-task learning and does not
+support unified multi-task training, making this evaluation a
+direct test of the scalability and task-compositional capability
+of Lift3D-VLA.JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8
+TABLE II: Results on the MetaWorld [118] benchmark. We evaluate models in both single-task and multi-task settings over
+25 rollouts. Success is determined by the built-in MetaWorld evaluation module. Results report average manipulation success
+rates (S.R.). † denotes models with 3D Temporal-Aware Pretraining.
+Models Assembly Bin Box Button Dial Drawer Hammer Hand Peg Push Reach Shelf Sweep Mean
+S.R.picking close press turn open unplug wall place into
+Single-Task Setting
+CLIP 64 92 60 100 82 100 88 36 78 64 56 26 40 68.2
+R3M 100 60 92 92 100 100 60 66 96 60 60 36 60 75.5
+VC-1 60 80 66 96 76 100 88 44 50 60 60 36 60 67.4
+PointNet 100 44 46 100 94 100 38 32 68 36 52 14 24 57.5
+PointNet++ 96 72 86 98 78 84 70 26 78 98 48 12 24 66.9
+PointNeXt 98 82 78 100 92 100 50 20 78 28 48 12 42 63.7
+SPA 96 92 76 100 84 96 100 36 68 55 56 16 64 72.2
+DP3 100 24 48 100 92 100 100 14 98 54 40 18 22 62.3
+Lift3D(Clip) 100 92 92 100 100 100 94 64 98 44 74 42 72 82.5
+Lift3D(Dinov2) 100 100 92 100 100 100 100 76 96 40 80 28 80 84.0
+Lift3D(Clip)† 100 92 100 100 100 100 92 60 100 56 88 72 92 88.6
+Lift3D(Dinov2)† 96 92 100 100 100 100 100 56 96 40 92 68 92 87.1
+Multi-Tasks Setting
+OpenVLA [55] 90 70 70 100 90 100 50 70 80 50 30 70 90 73.9
+π0.5 [4] 100 85 50 100 45 80 75 45 65 55 45 75 60 67.7
+SpatialVLA [20] 75 65 50 90 65 65 85 45 55 35 65 40 70 61.9
+3DS-VLA [24] 75 100 45 90 95 100 90 70 75 50 60 60 90 76.9
+Lift3D(Clip) 100 92 92 100 100 100 94 64 98 44 74 42 72 82.5
+Lift3D(Dinov2) 100 100 92 100 100 100 100 76 96 40 80 28 80 84.0
+Lift3D-VLA 100 100 64 100 100 100 96 88 100 84 72 52 84 87.7
+TABLE III: Results on the RLBench [119] benchmark. All models are trained in the multi-task setting and evaluated over
+25 rollouts. We report average manipulation success rates (S.R.).
+Models Close Close Toilet Sweep to Close Umbrella Frame Place wine Water Mean
+box laptop lid seat down dustpan fridge out off hanger at rack plants S.R.
+OpenVLA [55] 60 35 75 55 85 30 15 20 5 42.2
+π0.5 [4] 90 95 85 75 100 10 80 75 35 71.7
+SpatialVLA [20] 80 70 85 20 80 25 40 15 30 49.4
+3DS-VLA [24] 88 96 96 16 92 80 52 88 36 71.6
+Lift3D-VLA 95 80 95 95 90 65 75 95 50 82.2
+Baselines. We compare Lift3D-VLA with recent state-ofthe-art vision-language-action (VLA) models. OpenVLA [55]
+adopts a large pretrained vision-language model and performs
+end-to-end action prediction via instruction-conditioned finetuning. π0.5 [4] is trained on a large-scale, self-collected
+robotic dataset, enabling strong cross-task and cross-domain
+generalization. SpatialVLA [20] enhances VLA models with
+explicit spatial understanding modules to better capture geometric structure. 3DS-VLA [24] incorporates 3D structural
+priors to improve spatial understanding in embodied manipulation.
+Implementation Details. All baselines are initialized from
+their officially released pretrained checkpoints and trained using their official configurations. For Lift3D-VLA, we initialize
+the LLM backbone from Prismatic VLM [54] (7B parameters)
+and replace its visual encoder with our pretrained encoder. We
+adopt full-parameter fine-tuning and train the model jointly
+over all tasks for 300 epochs, using a batch size of 10
+and a learning rate of 1 × 10−4. Optimization is performed
+with AdamW under a cosine learning rate schedule across
+8 NVIDIA A800 GPUs. Evaluation follows the protocol of
+prior work. We execute 20 rollouts per task using the final
+checkpoint, repeat the evaluation three times with different
+random seeds, and report the average success rate of the bestperforming checkpoint.
+Quantitative Results. In multi-task experiments, Lift3DVLA achieves 87.7% average success across 13 MetaWorld
+tasks, substantially outperforming OpenVLA (73.9%), π0.5
+(67.7%), SpatialVLA (61.9%), and 3DS-VLA (76.9%) by
+13.8, 20.0, 25.8, and 10.8 percentage points respectively. On
+RLBench (Table III), Lift3D-VLA achieves 82.2% average
+success across 9 tasks, outperforming OpenVLA (42.2%),
+π0.5 (71.7%), SpatialVLA (49.4%), and 3DS-VLA (71.6%).
+Notably, Lift3D-VLA attains near-perfect success rates on
+tasks requiring precise spatial reasoning, such as close box
+(95%), toilet seat down (95%), and place wine at rack (95%).
+Beyond the overall average, Lift3D-VLA attains the highest
+success rate on 6 out of 9 RLBench tasks, indicating consistent performance gains across diverse manipulation skills.
+These improvements validate the effectiveness of combining
+explicit 3D spatial grounding with implicit temporal-aware 3D
+pretraining for generalizable manipulation.JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 960
+65
+70
+75
+80
+85
+90
+95
+Success Rate (%)
+68.2
+83.8 85.8 86.1 84.0
+88.6
+a) Component ablations
+RGB
+Depth
+PE
+Static
+Dynamic
+Ours
+78
+80
+82
+84
+86
+88
+90
+92
+85.6
+83.2
+86.186.7
+88.6
+84.584.0
+85.9
+b) Mask ratio
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+82
+83
+85
+86
+87
+88
+90
+91
+84.3
+86.1
+88.6
+85.1
+87.2
+c) Decoder depth
+1
+2
+4
+8
+16
+78
+80
+82
+84
+86
+88
+90
+92
+81.2
+85.6
+88.6
+d) Pretraining data scale
+None 20K 140K
+Fig. 3: Comprehensive Ablation Studies. a) Component-wise analysis comparing different pretraining strategies (Pure RGB,
+Depth MAE, PE Only, Static Only, Dynamic Only, and Full model). b) Effect of mask ratio during masked point reconstruction.
+c) Impact of decoder depth on pretraining effectiveness. d) Scalability analysis with varying pretraining data scales. All
+experiments are conducted on MetaWorld with success rates reported as percentages.
+C. Ablation Study
+We conduct comprehensive ablation studies to validate the
+effectiveness of each component in Lift3D-VLA, as summarized in Figure 3. These experiments are conducted on our
+prior Lift3D framework, directly isolating the effectiveness of
+the proposed pretraining scheme.
+1) Component-wise Analysis: As shown in Figure 3(a),
+we systematically ablate each component of Lift3D-VLA to
+understand their individual contributions. Without any 3D processing, the RGB baseline achieves only 68.2%, highlighting
+the necessity of both explicit and implicit geometric reasoning. The official Lift3D baseline, which adopts depth reconstruction as its pretraining objective, attains 83.8%, showing
+that implicit depth-based pretraining provides meaningful but
+limited geometric priors. Applying Explicit 3D Positional
+Lifting alone without pretraining yields 85.8%, confirming
+that explicit geometric correspondence between 3D points
+and 2D positional embeddings already provides useful spatial grounding. For GC-MAE components, when pretraining
+with only the static branch (masked point reconstruction),
+the model achieves 86.1%; when pretraining with only the
+dynamic branch (future geometric prediction), it attains 84.0%.
+Both branches independently contribute to manipulation performance, and jointly optimizing them in our full Lift3DVLA achieves 88.6%, confirming their complementary nature
+in enabling the VLA encoder to acquire robust implicit 3D
+physical understanding.
+2) Hyperparameter Analysis: We examine two critical hyperparameters in GC-MAE pretraining: the mask ratio and the
+decoder depth. Mask Ratio. As shown in Figure 3(b), a mask
+ratio of 0.6 achieves the best performance. Lower ratios provide insufficient reconstruction challenge, while excessively
+high ratios discard too much spatial context, both leading to
+performance degradation. Decoder Depth. Figure 3(c) shows
+that a four-layer decoder yields the optimal result (88.6%).
+Shallower decoders lack sufficient capacity, while deeper
+decoders yield no consistent gains. These results suggest that
+moderate mask ratio and decoder depth offer the best trade-off
+between expressiveness and training efficiency.
+3) Pretraining Data Scale Analysis: To assess the scalability of our GC-MAE framework, we vary the size of the
+pretraining corpus and analyze its impact on downstream
+manipulation performance. Figure 3(d) demonstrates a clear
+positive correlation between pretraining data scale and downstream performance. Without pretraining, the model achieves
+81.2%. Pretraining on 20K trajectories improves performance
+to 85.6%, and scaling to 140K trajectories further boosts
+success to 88.6%, yielding a 7.4 percentage point gain over the
+no-pretraining baseline. The consistent improvement across
+different data scales indicates that our GC-MAE framework
+can effectively leverage larger datasets to enhance manipulation capabilities.
+TABLE IV: Ablation of layer-wise temporal action modeling.
+‘Layers’ indicates the number of Transformer layers used for
+parallel action prediction, and ‘Stride’ denotes the interval
+between them. Results are averaged over 13 MetaWorld tasks.
+Metric 1 Layer 2 Layers 4 Layers
+Stride 1 Stride 1 / 2 / 4 Stride 1 / 2 / 4
+Mean S.R. 83.9 84.3 / 85.1 / 85.8 84.0 / 86.3 / 87.7
+4) Layer-wise Temporal Action Modeling Analysis: We
+further study the design of the layer-wise temporal action
+modeling strategy on the full Lift3D-VLA, providing insights
+into the final action representation and output formulation of
+the model. As shown in Table IV, increasing both the number
+of action prediction layers and the stride consistently improves
+performance. Using a single layer yields a baseline success
+rate of 83.9%, while introducing multiple layers already brings
+noticeable gains (e.g., 85.8% with two layers and stride four).
+Further scaling to four layers leads to the best performance,
+with a peak success rate of 87.7% at stride 4. Notably,
+larger strides consistently outperform smaller ones under the
+same number of layers, suggesting that sampling temporally
+diverse features is more beneficial than densely aggregating
+adjacent representations. All experiments are conducted with
+an action chunk size of four. These results validate ourJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 10Intel RealSense
+455 Camera
+ROBOTIQ Adaptive Gripper
+Franka Research 3
+Single Arm
+(a) Single-arm setup for whiteboard cleaning, dish placement, and egg-onbread tasks.3D-PrintedUMI
+Gripper
+Intel RealSense
+455 Camera
+(b) Single-arm setup for banana pick-and-place,
+water pouring, and cola stacking tasks.
+Fig. 4: Single-arm experimental platforms. Both setups use a Franka Research 3 arm equipped with an Intel RealSense D455
+RGB-D camera.
+design of layer-wise temporal action modeling, where parallel
+action predictions from sparsely selected layers enable richer
+temporal abstraction and improve downstream manipulation
+performance.
+D. Real-World Experiment
+To evaluate the efficacy and practical applicability of
+Lift3D-VLA, we instantiate our framework on real-world
+robotic platforms using both single-arm (Figure 4) and bimanual (Figure 5) Franka Research 3 setups. The experimental system is equipped with Intel RealSense D455 cameras
+to provide high-fidelity RGB-D observations, while expert
+demonstrations are acquired via the GELLO teleoperation
+interface [124].
+1) Data Collection: In the single-arm configuration, we
+curated a dataset comprising 200 demonstrations per task
+across six distinct manipulation skills: (1) whiteboard cleaning
+with an eraser, (2) precision placement of a dish onto a rack,
+(3) placing an egg on bread using a spatula, (4) pick up the
+banana on the table and place it on the white plate, (5) Pour
+water into the cup, and (6) Stacking cola bottles. To evaluate
+bimanual coordination, we designed two collaborative tasks:
+(1) scooping popcorn into a bowl, where one arm stabilizes
+the bowl while the other performs the scooping motion, and
+(2) opening a pot lid and picking corn, which requires sequential bimanual coordination. All trajectories were recorded
+at 30 FPS, with keyframes subsequently extracted to facilitate
+efficient policy training.
+2) Training and Evaluation Protocol: We train Lift3DVLA following the protocol described in Section V-B3, with
+the primary difference being the use of multi-view visual
+inputs: two camera perspectives for single-arm tasks (thirdperson and wrist-mounted views) and three perspectives for
+dual-arm tasks (one third-person and two wrist-mounted
+views). We compare our method against three representative
+baselines: (i) π0 [59], a state-of-the-art 2D VLA model;
+(ii) SpatialVLA [20], a 3D-aware VLA framework; and (iii)
+CoT-VLA [61], which incorporates explicit chain-of-thought
+reasoning for action generation.Intel RealSense
+455 Camera
+Table-top
+Work Space
+Fig. 5: Dual-arm experimental platform. Two Franka Research 3 arms are deployed for bimanual coordination tasks,
+including popcorn scooping and pot-lid opening with corn
+picking.
+3) Quantitative and Qualitative Results: Table V summarizes the real-world manipulation performance of Lift3D-VLA
+and competitive baselines. Our framework achieves an average
+success rate of 69% across all tasks, outperforming π0 (65%),
+SpatialVLA (43%), and CoT-VLA (46%). In the placing egg
+on bread task, which involves delicate spatula control and
+complex contact dynamics, Lift3D-VLA attains a success
+rate of 66%, largely attributed to GC-MAE’s recover–forecast
+capability, which enables the robot to anticipate physical
+interactions even under partial occlusions. We further evaluate
+Lift3D-VLA on a long-horizon manipulation task requiring
+one, two, and three consecutive successful executions within a
+single rollout. Lift3D-VLA maintains markedly higher success
+rates across all stages (66% → 33% → 20%) compared to π0
+(47% → 20% → 7%), with the performance gap widening
+as the horizon increases, indicating that Lift3D-VLA better
+preserves coherent latent representations of task progress over
+extended horizons. For dual-arm tasks, Lift3D-VLA achieves
+an average success rate of 60%. In the opening a pot lid and
+picking corn task, our method reaches 73% success comparedJOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 11
+TABLE V: Comparison across real-world manipulation tasks. We report success rates (S.R.) for standard single-arm and
+dual-arm tasks (Franka). Mean S.R. denotes the average success rate.
+Models Wipe Place dish Place egg Pick and Pour water Stack Scoop Open pot Mean Place egg on bread
+whiteboard on rack on bread place banana into cup cola cans popcorn pick corn S.R. Step1 Step2 Step3
+SpatialVLA [20] 60 33 20 40 87 33 27 40 43 20 7 0
+π0.5 [4] 60 60 47 87 87 65 53 60 65 47 20 7
+CoT-VLA [61] 53 66 33 53 47 33 33 53 46 33 20 13
+Lift3D-VLA 66 66 66 87 93 53 47 73 69 66 33 20Place Dish on Rack
+Press Stamp
+Scoop Popcorn
+Execution Progress
+Wipe whiteboard
+Pick and Place Banana
+Pour Water
+Stack Cola
+Fig. 6: Visualization of real-world task execution. We illustrate the execution progress across seven diverse manipulation
+tasks, including both single-arm and dual-arm configurations.
+to π0 (60%), validating the efficacy of layer-wise temporal
+action modeling in generating temporally coherent motion
+profiles and reducing inter-arm desynchronization. As shown
+in Figure 6, we visualize the execution progress across seven
+representative tasks spanning both single-arm (place dish on
+rack, press stamp, wipe whiteboard, pick and place banana,
+pour water, stack cola) and dual-arm (scoop popcorn) configurations, demonstrating the model’s ability to handle complex
+contact dynamics and long-horizon coordination across diverse
+manipulation scenarios.
+E. Generalization Experiment
+To evaluate the robustness of Lift3D-VLA, we conduct
+experiments under three out-of-distribution (OOD) settings:
+(1) Unseen Object, where target objects (e.g., the bottle or
+banana) are replaced with instances of different shapes and
+textures; (2) Unseen Light, where we introduce multi-colored
+lighting perturbations; and (3) Unseen Background, where
+novel distractor objects (e.g., a flower vase) are added to the
+scene.
+TABLE VI: Quantitative results of generalization experiments.
+We evaluate the robustness of Lift3D-VLA against π0.5 under
+three unseen scenarios. The percentages in brackets denote the
+performance degradation relative to the Original setup. All
+values are reported as integers (%).
+Scenario Pick Banana Pour Water
+π0.5 Lift3D-VLA π0.5 Lift3D-VLA
+Original 87 87 87 93
+Unseen Object 80 (-8%) 87 (-0%) 80 (-8%) 87 (-6%)
+Unseen Lighting 73 (-16%) 80 (-8%) 67 (-23%) 80 (-14%)
+Unseen Background 20 (-77%) 80 (-8%) 60 (-31%) 87 (-6%)
+Average Drop -34% -5% -21% -9%
+As shown in Table VI, while the baseline π0.5 suffers a
+significant performance degradation (dropping by up to 77%
+in unseen backgrounds), Lift3D-VLA maintains high success
+rates with much smaller drops (typically within 15%). This
+robustness stems from our temporal-aware 3D pretraining,
+which is less sensitive to 2D appearance changes and background clutter. Specifically, in the ”Pick Banana” task under
+unseen backgrounds, Lift3D-VLA achieves an 80% success
+rate, outperforming π0.5 by 60 percentage points. This gap
+demonstrates the model’s reliance on intrinsic 3D structures
+rather than 2D pixel-level appearance. Across all OOD settings, Lift3D-VLA degrades by only 5% to 9% on average,
+compared to 21% to 34% for π0.5, further validating temporalaware 3D pretraining as a robust foundation for generalizable
+manipulation.
+1) Failure Case Analysis.: Despite the robust performance
+of Lift3D-VLA, we identify three representative failure modes
+during real-world execution, as visualized in Figure 8. 1) Pour
+Direction Misalignment: In the water-pouring task, the model
+occasionally fails to align the bottle mouth precisely with
+the beaker. This typically occurs due to the narrow tolerance
+of the target container and slight calibration drifts in the
+wrist-to-gripper transformation. 2) Object Collision: During
+the descent phase in the cola-stacking task, the gripper may
+prematurely collide with the side of the can. This suggests
+that while 3D pretraining provides strong geometric priors,
+the model can still struggle with precise spatial occupancy
+reasoning when the gripper is in close proximity to objects.JOURNAL OF LATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 12Unseen Object Unseen Light Unseen Background
+Unseen Object Unseen Light Unseen Background
+Pour Water
+Pick Banana
+Fig. 7: Real-world generalization scenarios. We evaluate
+the model under three out-of-distribution conditions: Unseen
+Object, Unseen Light, and Unseen Background. Red boxes
+highlight the environmental perturbations.
+3) Inaccurate Grasp Position: In the fruit-picking task, the
+gripper sometimes moves toward the midpoint between two
+adjacent fruits rather than localizing a single target. This suggests insufficient instance-level discrimination when multiple
+similar objects are in close proximity, highlighting the need for
+finer-grained object-centric 3D representations. Overall, these
+failure cases indicate that while our temporal-aware 3D representation significantly improves macro-level manipulation,
+further research into closed-loop error correction and higherresolution 3D representations is required to achieve humanlevel precision in contact-rich environments.Front View Front View Front View
+Wrist View Wrist View Wrist View
+Pour Direction Object Collision Grasp Position
+Fig. 8: Failure case visualization in real-world tasks. We
+illustrate four typical failure modes across different manipulation scenarios. The top row shows the Front View, and the
+bottom row shows the corresponding Wrist View.
+VI. CONCLUSION
+In this paper, we presented Lift3D-VLA, a unified VisionLanguage-Action framework designed to overcome the geometric and temporal limitations of current 2D-centric robotic
+policies. By introducing GC-MAE, we enable VLA models
+to internalize both static 3D structures and dynamic physical
+evolutions through a dual-objective self-supervision scheme.
+We further extended the 2D-pretraining reuse paradigm by
+leveraging camera parameters for explicit 3D positional lifting,
+which minimizes spatial information loss and ensures seamless
+integration with large-scale pretrained backbones. To address
+the challenges of dynamic manipulation, we propose layerwise temporal action modeling to exploit the hierarchical
+nature of LLMs for temporally coherent action chunk generation. We extensively evaluated Lift3D-VLA on MetaWorld,
+RLBench, and diverse real-world manipulation tasks, where
+it consistently outperforms state-of-the-art VLA models with
+superior robustness to out-of-distribution perturbations. We
+believe that explicit 3D geometric reasoning, combined with
+large-scale temporal pretraining, provides a promising path
+toward more precise and generalizable embodied AI.
