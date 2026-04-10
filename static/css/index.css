@@ -491,6 +491,10 @@ body {
     margin: 0;
 }
 
+video {
+    filter: brightness(0.65);
+}
+
 .section-blue {
     background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
 }
