@@ -484,12 +484,19 @@ body {
 }
 
 
-/* gradient background */
+/* section backgrounds */
 
 .video-section {
-    background: linear-gradient(135deg, #3e7ef520 0%, #cde1fc20 50%, #9ec4f340 100%);
     padding: 3rem 1.5rem;
     margin: 0;
+}
+
+.section-blue {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e8f4fd 100%);
+}
+
+.section-gray {
+    background: #f7f7f7;
 }
 
 
@@ -514,7 +521,6 @@ body {
 /* Zoom section background enhancement */
 
 .video-section {
-    background: linear-gradient(135deg, #3e7ef530 0%, #cde1fc0a 50%, #9ec4f354 100%);
     padding: 3rem 1.5rem;
     margin: 0;
 }
