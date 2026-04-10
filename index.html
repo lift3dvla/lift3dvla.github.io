@@ -82,10 +82,11 @@
         }
         .results-table th {
             background: #f0f7ff;
-            padding: 8px 12px;
+            padding: 8px 10px;
             text-align: center;
             border: 1px solid #d0e4f7;
             font-weight: 600;
+            word-break: keep-all;
         }
         .results-table td {
             padding: 7px 12px;
@@ -205,7 +206,7 @@
                         </div>
                     </div>
                     <p class="pipeline-caption">
-                        <b>Overview.</b> Unlike previous 3D VLA methods that encode point clouds with newly introduced 3D encoders or by projecting features between 2D and 3D spaces, Lift3D-VLA equips 2D VLA models with explicit 3D reasoning and temporally coherent action generation. Across 22 simulated and 10 real-world tasks, Lift3D-VLA achieves state-of-the-art results.
+                        <b>Overview.</b> Unlike previous 3D VLA methods that encode point clouds with newly introduced 3D encoders or by projecting features between 2D and 3D spaces, Lift3D-VLA equips 2D VLA models with explicit 3D reasoning and temporally coherent action generation. Across 22 simulated and 8 real-world tasks, Lift3D-VLA achieves state-of-the-art results.
                     </p>
                 </div>
             </div>
@@ -306,16 +307,16 @@
                         <table class="results-table">
                             <thead>
                                 <tr>
-                                    <th>Models</th>
-                                    <th>Wipe<br>whiteboard</th>
-                                    <th>Place dish<br>on rack</th>
-                                    <th>Place egg<br>on bread</th>
-                                    <th>Pick &amp;<br>place banana</th>
-                                    <th>Pour water<br>into cup</th>
-                                    <th>Stack<br>cola cans</th>
-                                    <th>Scoop<br>popcorn</th>
-                                    <th>Open pot<br>pick corn</th>
-                                    <th><b>Mean S.R.</b></th>
+                                    <th style="min-width:100px;">Models</th>
+                                    <th style="min-width:72px;">Wipe whiteboard</th>
+                                    <th style="min-width:72px;">Place dish on rack</th>
+                                    <th style="min-width:72px;">Place egg on bread</th>
+                                    <th style="min-width:72px;">Pick &amp; place banana</th>
+                                    <th style="min-width:72px;">Pour water into cup</th>
+                                    <th style="min-width:72px;">Stack cola cans</th>
+                                    <th style="min-width:72px;">Scoop popcorn</th>
+                                    <th style="min-width:72px;">Open pot pick corn</th>
+                                    <th style="min-width:72px;"><b>Mean S.R.</b></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -332,7 +333,7 @@
                                     <td>53</td><td><b>66</b></td><td>33</td><td>53</td><td>47</td><td>33</td><td>33</td><td>53</td><td>46</td>
                                 </tr>
                                 <tr class="ours-row">
-                                    <td><b>Lift3D-VLA (Ours)</b></td>
+                                    <td><b>Lift3D-VLA</b></td>
                                     <td><b>66</b></td><td><b>66</b></td><td><b>66</b></td><td><b>87</b></td><td><b>93</b></td><td><b>66</b></td><td>47</td><td><b>73</b></td><td><b>71</b></td>
                                 </tr>
                             </tbody>
