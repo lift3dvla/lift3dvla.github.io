@@ -531,7 +531,7 @@
   const BASE_COLOR  = 'rgba(180,195,210,0.75)';
   const LIFT3D_COLOR = 'rgba(120,160,210,0.75)'; // lighter blue for non-† Lift3D
 
-  function simChart(id, labels, values, ourIdx, lift3dIdxs, extraPlugin) {
+  function simChart(id, labels, values, ourIdx, lift3dIdxs) {
     const colors = values.map((_, i) => {
       if (i === ourIdx) return OURS_COLOR;
       if (lift3dIdxs && lift3dIdxs.includes(i)) return LIFT3D_COLOR;
@@ -539,7 +539,6 @@
     });
     const yMin = Math.floor(Math.min(...values) - 3);
     const yMax = Math.ceil(Math.max(...values) + 3);
-    if (extraPlugin) Chart.register(extraPlugin);
     new Chart(document.getElementById(id), {
       type: 'bar',
       data: {
@@ -573,40 +572,11 @@
     });
   }
 
-  // superscript-dagger plugin: draws † as superscript on specified tick indices
-  const superDaggerPlugin = {
-    id: 'superDagger',
-    afterDraw(chart) {
-      const items = chart.scales.x && chart.scales.x._labelItems;
-      if (!items) return;
-      const ctx = chart.ctx;
-      [10, 11].forEach(idx => {
-        const item = items[idx];
-        if (!item) return;
-        const lines = Array.isArray(item.label) ? item.label : [item.label];
-        const fontSize = item.font && item.font.size ? item.font.size : 10;
-        const lineH = item.font && item.font.lineHeight ? item.font.lineHeight : fontSize * 1.2;
-        // y of first line top
-        const y0 = item.y;
-        ctx.save();
-        ctx.font = `600 ${fontSize}px ${(item.font && item.font.family) || 'sans-serif'}`;
-        const textW = ctx.measureText(lines[0] || 'Lift3D-VLA').width;
-        ctx.font = `600 ${Math.round(fontSize * 0.72)}px ${(item.font && item.font.family) || 'sans-serif'}`;
-        ctx.fillStyle = idx === 10 ? '#1a56cc' : '#555';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'alphabetic';
-        ctx.fillText('†', item.x + textW / 2 + 1, y0 + fontSize * 0.72);
-        ctx.restore();
-      });
-    }
-  };
-
   // MetaWorld Single-Task
   simChart('sim-mw-single',
-    ['CLIP','R3M','VC-1','PointNet','PointNet++','PointNeXt','SPA','DP3','Lift3D\n(Clip)','Lift3D\n(Dino)','Lift3D-VLA\n(Clip)','Lift3D-VLA\n(Dinov2)'],
+    ['CLIP','R3M','VC-1','PointNet','PointNet++','PointNeXt','SPA','DP3','Lift3D\n(Clip)','Lift3D\n(Dino)','Lift3D-VLA†\n(Clip)','Lift3D-VLA†\n(Dinov2)'],
     [68.2, 75.5, 67.4, 57.5, 66.9, 63.7, 72.2, 62.3, 82.5, 84.0, 88.6, 87.1],
-    10, [8, 9, 11],
-    superDaggerPlugin
+    10, [8, 9, 11]
   );
 
   // MetaWorld Multi-Task
