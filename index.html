@@ -217,7 +217,7 @@
 
                     <!-- Teaser figure -->
                     <div class="pipeline-image" style="margin-top: 2rem;">
-                        <img src="./static/images/lift3dvla/1_teaser.png" alt="Lift3D-VLA Overview" class="method-figure"
+                        <img src="./static/images/lift3dvla/1_teaser.png?v=20261106" alt="Lift3D-VLA Overview" class="method-figure"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         <div style="display:none; padding: 2rem; background: #f5f5f5; border-radius: 8px; color: #777;">
                             [Teaser figure: static/images/lift3dvla/1_teaser.png]
@@ -255,14 +255,14 @@
                     <h2 class="title is-3">Method: Lift3D-VLA Framework</h2>
 
                     <div class="pipeline-image">
-                        <img src="./static/images/lift3dvla/2_method.png" alt="Lift3D-VLA Framework" class="method-figure"
+                        <img src="./static/images/lift3dvla/2_method.png?v=20261106" alt="Lift3D-VLA Framework" class="method-figure"
                              onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                         <div style="display:none; padding: 2rem; background: #f5f5f5; border-radius: 8px; color: #777;">
                             [Method figure: static/images/lift3dvla/2_method.png]
                         </div>
                     </div>
                     <p class="pipeline-caption" style="margin-bottom: 2rem;">
-                        <b>Lift3D-VLA Framework.</b> (a) Following Lift3D, we perform virtual projection to align 3D points with pretrained 2D positional embeddings, constructing geometry-aligned 3D PEs. (b) Stage 1: GC-MAE reconstructs the current point cloud while predicting its future geometric evolution, enabling the model to capture physical dynamics. (c) Stage 2: Layer-wise temporal action modeling leverages intermediate and deep LLM layers to generate temporally consistent action sequences.
+                        <b>Lift3D-VLA Framework.</b> (a) Following Lift3D, we perform virtual projection to align 3D points with pretrained 2D positional embeddings, constructing geometry-aligned 3D PEs. (b) VGGT synthesizes pseudo 3D annotations from robotic data for GC-MAE, which reconstructs the current point cloud and predicts its future geometric evolution, encouraging the encoder to represent spatial structure and geometric changes. (c) Layer-wise temporal action modeling leverages intermediate and deep LLM layers to generate temporally structured action sequences.
                     </p>
 
                 </div>
