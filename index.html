@@ -104,6 +104,8 @@
             font-weight: 700;
             color: #2366d1;
         }
+        .result-std { font-size: 0.8em; font-weight: 400; white-space: nowrap; }
+        .result-note { font-size: 0.85rem; color: #555; text-align: left; line-height: 1.6; }
         .results-table td:first-child {
             text-align: left;
             font-weight: 500;
@@ -222,7 +224,7 @@
                         </div>
                     </div>
                     <p class="pipeline-caption">
-                        <b>Overview.</b> Unlike previous 3D VLA methods that encode point clouds with newly introduced 3D encoders or by projecting features between 2D and 3D spaces, Lift3D-VLA equips 2D VLA models with explicit 3D reasoning and temporally coherent action generation. Across 22 simulated and 8 real-world tasks, Lift3D-VLA achieves state-of-the-art results.
+                        <b>Overview.</b> Unlike previous 3D VLA methods that encode point clouds with newly introduced 3D encoders or by projecting features between 2D and 3D spaces, Lift3D-VLA equips 2D VLA models with explicit 3D reasoning and temporally coherent action generation. Across 22 simulated and 8 standard real-world tasks, Lift3D-VLA achieves state-of-the-art results.
                     </p>
                 </div>
             </div>
@@ -275,7 +277,7 @@
                 <div class="column is-10">
                     <h2 class="title is-3">Simulation Results</h2>
                     <p class="subtitle is-5" style="margin-bottom: 2rem;">
-                        Lift3D-VLA is evaluated on 22 tasks across the MetaWorld and RLBench benchmarks in both single-task and multi-task settings.
+                        Lift3D-VLA is evaluated on 13 MetaWorld tasks in single-task and multi-task settings, and 9 RLBench tasks in the multi-task setting.
                     </p>
 
                     <!-- Simulation Bar Charts -->
@@ -317,7 +319,7 @@
 
                     <!-- Quantitative results -->
                     <p class="subtitle is-5" style="margin-bottom: 1rem;">
-                        We compare Lift3D-VLA against state-of-the-art VLA methods across 8 real-world manipulation tasks.
+                        Across 8 standard real-world manipulation tasks, Lift3D-VLA achieves 71.4% mean success, exceeding π<sub>0.5</sub> (65.0%) by 6.4 percentage points.
                     </p>
                     <div style="overflow-x: auto;">
                         <table class="results-table">
@@ -338,23 +340,103 @@
                             <tbody>
                                 <tr>
                                     <td>SpatialVLA</td>
-                                    <td>60</td><td>33</td><td>20</td><td>40</td><td>87</td><td>33</td><td>27</td><td>40</td><td>43</td>
+                                    <td>60</td>
+                                    <td>33</td>
+                                    <td>20</td>
+                                    <td>40</td>
+                                    <td>87</td>
+                                    <td>33</td>
+                                    <td>27</td>
+                                    <td>40</td>
+                                    <td>42.5</td>
                                 </tr>
                                 <tr>
                                     <td>π<sub>0.5</sub></td>
-                                    <td>60</td><td>60</td><td>47</td><td><b>87</b></td><td>87</td><td><b>66</b></td><td><b>53</b></td><td>60</td><td>65</td>
+                                    <td>60</td>
+                                    <td>60</td>
+                                    <td>47</td>
+                                    <td><b>87</b></td>
+                                    <td>87</td>
+                                    <td>66</td>
+                                    <td><b>53</b></td>
+                                    <td>60</td>
+                                    <td>65.0</td>
                                 </tr>
                                 <tr>
                                     <td>CoT-VLA</td>
-                                    <td>53</td><td><b>66</b></td><td>33</td><td>53</td><td>47</td><td>33</td><td>33</td><td>53</td><td>46</td>
+                                    <td>53</td>
+                                    <td>66</td>
+                                    <td>33</td>
+                                    <td>53</td>
+                                    <td>47</td>
+                                    <td>33</td>
+                                    <td>33</td>
+                                    <td>53</td>
+                                    <td>46.7</td>
                                 </tr>
                                 <tr class="ours-row">
-                                    <td><b>Lift3D-VLA</b></td>
-                                    <td><b>66</b></td><td><b>66</b></td><td><b>66</b></td><td><b>87</b></td><td><b>93</b></td><td><b>66</b></td><td>47</td><td><b>73</b></td><td><b>71</b></td>
+                                    <td>Lift3D-VLA</td>
+                                    <td><b>68.9</b><br><span class="result-std">±3.8</span></td>
+                                    <td><b>66.7</b><br><span class="result-std">±0.0</span></td>
+                                    <td><b>66.7</b><br><span class="result-std">±6.7</span></td>
+                                    <td>86.7<br><span class="result-std">±0.0</span></td>
+                                    <td><b>91.1</b><br><span class="result-std">±3.8</span></td>
+                                    <td><b>66.7</b><br><span class="result-std">±0.0</span></td>
+                                    <td>46.7<br><span class="result-std">±0.0</span></td>
+                                    <td><b>77.8</b><br><span class="result-std">±7.7</span></td>
+                                    <td><b>71.4</b><br><span class="result-std">±2.5</span></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <p class="result-note">Success rates are reported in %. For Lift3D-VLA, values are means ± sample standard deviations across three evaluation batches of 15 rollouts per task, using the same trained checkpoint. Baselines use 15 rollouts per task. Mean S.R. covers only the eight standard tasks.</p>
+
+                    <h3 class="title is-4" style="margin-top: 2rem;">Long-Horizon Manipulation</h3>
+                    <p>Repeated egg placement reports cumulative success after one, two, and three repetitions within a rollout. Express packing and screw driving report full-task success on two additional bimanual tasks.</p>
+                    <div style="overflow-x: auto;">
+                        <table class="results-table">
+                            <thead>
+                                <tr><th rowspan="2">Models</th><th colspan="3">Place egg on bread</th><th rowspan="2">Express packing</th><th rowspan="2">Screw driving</th></tr>
+                                <tr><th>Step 1</th><th>Step 2</th><th>Step 3</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>SpatialVLA</td>
+                                    <td>20</td>
+                                    <td>7</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>π<sub>0.5</sub></td>
+                                    <td>47</td>
+                                    <td>20</td>
+                                    <td>7</td>
+                                    <td>47</td>
+                                    <td>40</td>
+                                </tr>
+                                <tr>
+                                    <td>CoT-VLA</td>
+                                    <td>33</td>
+                                    <td>13</td>
+                                    <td>7</td>
+                                    <td>40</td>
+                                    <td>13</td>
+                                </tr>
+                                <tr class="ours-row">
+                                    <td>Lift3D-VLA</td>
+                                    <td><b>68.9</b><br><span class="result-std">±3.8</span></td>
+                                    <td><b>33.3</b><br><span class="result-std">±6.7</span></td>
+                                    <td><b>22.2</b><br><span class="result-std">±3.8</span></td>
+                                    <td><b>62.2</b><br><span class="result-std">±3.8</span></td>
+                                    <td><b>46.7</b><br><span class="result-std">±6.7</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="result-note">These long-horizon results are reported separately and are excluded from the eight-task Mean S.R. above.</p>
 
                     <!-- Task videos -->
                     <p class="subtitle is-5" style="margin-top: 2rem; margin-bottom: 0.5rem;">
@@ -552,7 +634,7 @@
   // MetaWorld Multi-Task
   simChart('sim-mw-multi',
     ['OpenVLA','π₀.₅','SpatialVLA','3DS-VLA','Lift3D-VLA'],
-    [73.9, 67.7, 61.9, 76.9, 87.7],
+    [73.8, 67.7, 61.9, 76.9, 87.7],
     4, []
   );
 
